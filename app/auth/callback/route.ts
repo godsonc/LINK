@@ -1,0 +1,21 @@
+import { NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") || "/auth";
+
+  if (code) {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      return NextResponse.redirect(
+        new URL(`/auth?error=${encodeURIComponent(error.message)}`, requestUrl.origin),
+      );
+    }
+  }
+
+  return NextResponse.redirect(new URL(next, requestUrl.origin));
+}

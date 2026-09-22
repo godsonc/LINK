@@ -1,334 +1,275 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { Provider } from "@supabase/supabase-js";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-type Tone = "purple" | "green" | "neutral" | "danger";
-type Flow = "signup" | "login" | "alternative" | "states";
+type Flow = "signup" | "login" | "alternative";
+type ScreenId =
+  | "start"
+  | "create"
+  | "verify"
+  | "created"
+  | "welcome"
+  | "signin"
+  | "logged"
+  | "forgot"
+  | "reset"
+  | "reset-success"
+  | "phone"
+  | "phone-verify"
+  | "social"
+  | "guest";
 
-type Screen = {
-  id: string;
-  label: string;
-  title: string;
-  subtitle: string;
-  helper?: string;
-  action: string;
-  tone: Tone;
-  icon?: "logo" | "check" | "lock" | "person" | "party" | "error";
-  fields?: string[];
-  links?: string[];
-};
-
-const flows: Record<Exclude<Flow, "states">, Screen[]> = {
+const flowScreens: Record<Flow, Array<{ id: ScreenId; label: string }>> = {
   signup: [
-    {
-      id: "signup-start",
-      label: "Get Started",
-      title: "LINK",
-      subtitle: "Welcome",
-      helper: "Create an account to start finding support and opportunities.",
-      action: "Create account",
-      tone: "purple",
-      icon: "logo",
-      links: ["Sign in", "Continue as guest"],
-    },
-    {
-      id: "signup-account",
-      label: "Create Account",
-      title: "Create your account",
-      subtitle: "Let’s get started",
-      action: "Create account",
-      tone: "purple",
-      fields: ["Full name", "Email address", "Create password", "Confirm password"],
-      links: ["Agree to the Terms of Use and Privacy Policy"],
-    },
-    {
-      id: "signup-verify",
-      label: "Verify Email",
-      title: "Check your email",
-      subtitle: "We’ve sent a verification link to",
-      helper: "Click the link in the email to verify your account.",
-      action: "Resend email",
-      tone: "green",
-      icon: "person",
-      links: ["Change email address"],
-    },
-    {
-      id: "signup-created",
-      label: "Account Created",
-      title: "Your account is ready!",
-      subtitle: "You can now sign in and start exploring support and opportunities.",
-      action: "Continue to sign in",
-      tone: "green",
-      icon: "check",
-    },
-    {
-      id: "signup-welcome",
-      label: "Welcome",
-      title: "Welcome to LINK!",
-      subtitle: "Let’s personalise your experience.",
-      action: "Tell us about you",
-      tone: "purple",
-      icon: "party",
-      links: ["I’ll do this later"],
-    },
+    { id: "start", label: "Get Started" },
+    { id: "create", label: "Create Account" },
+    { id: "verify", label: "Verify Email" },
+    { id: "created", label: "Account Created" },
+    { id: "welcome", label: "Welcome" },
   ],
   login: [
-    {
-      id: "login",
-      label: "Sign In",
-      title: "Sign in",
-      subtitle: "Welcome back! Please sign in to continue.",
-      action: "Sign in",
-      tone: "purple",
-      icon: "logo",
-      fields: ["Email or phone", "Your password"],
-      links: ["Forgot password?", "or continue with", "Google", "Apple", "Don’t have an account? Sign up"],
-    },
-    {
-      id: "logged-in",
-      label: "Logged In",
-      title: "Welcome back!",
-      subtitle: "You’ve successfully signed in.",
-      action: "Continue",
-      tone: "green",
-      icon: "check",
-    },
-    {
-      id: "forgot-password",
-      label: "Forgot Password",
-      title: "Forgot password?",
-      subtitle: "Enter your email address and we’ll send you a reset link.",
-      action: "Send reset link",
-      tone: "purple",
-      fields: ["Email address"],
-      links: ["Back to sign in"],
-    },
-    {
-      id: "reset-password",
-      label: "Reset Password",
-      title: "Create new password",
-      subtitle: "Choose a new password for your account.",
-      action: "Reset password",
-      tone: "purple",
-      fields: ["New password", "Confirm new password"],
-      links: ["At least 8 characters", "Include uppercase letter", "Include lowercase letter", "Include number or symbol"],
-    },
-    {
-      id: "reset-success",
-      label: "Password Reset Success",
-      title: "Password reset successful",
-      subtitle: "You can now sign in with your new password.",
-      action: "Go to sign in",
-      tone: "green",
-      icon: "lock",
-    },
+    { id: "signin", label: "Sign In" },
+    { id: "logged", label: "Logged In" },
+    { id: "forgot", label: "Forgot Password" },
+    { id: "reset", label: "Reset Password" },
+    { id: "reset-success", label: "Password Reset Success" },
   ],
   alternative: [
-    {
-      id: "phone-signup",
-      label: "Sign Up with Phone",
-      title: "Create your account",
-      subtitle: "Enter your mobile number and we’ll send you a verification code.",
-      action: "Send code",
-      tone: "purple",
-      fields: ["Mobile number"],
-      links: ["Use email instead"],
-    },
-    {
-      id: "phone-verify",
-      label: "Verify Phone Code",
-      title: "Enter verification code",
-      subtitle: "We’ve sent a 6-digit code to +44 7025 456789.",
-      action: "Verify code",
-      tone: "purple",
-      fields: ["4", "2", "7", "1", "9", "6"],
-      links: ["Didn’t receive the code?", "Resend code (00:46)", "Use email instead"],
-    },
-    {
-      id: "social",
-      label: "Social Sign Up",
-      title: "Create your account",
-      subtitle: "Sign up quickly using one of your social accounts.",
-      action: "Continue with Google",
-      tone: "purple",
-      icon: "person",
-      links: ["Continue with Apple", "Use email instead"],
-    },
-    {
-      id: "guest",
-      label: "Continue as Guest",
-      title: "Continue as guest?",
-      subtitle: "You can explore LINK with limited access. Create an account later to save information.",
-      action: "Continue as guest",
-      tone: "purple",
-      icon: "person",
-      links: ["Search opportunities", "View information", "Contact support", "Create account"],
-    },
+    { id: "phone", label: "Sign Up with Phone" },
+    { id: "phone-verify", label: "Verify Phone Code" },
+    { id: "social", label: "Social Sign Up" },
+    { id: "guest", label: "Continue as Guest" },
   ],
 };
 
-const states: Screen[] = [
-  {
-    id: "field-error",
-    label: "Field Error",
-    title: "Email address",
-    subtitle: "Please enter a valid email address.",
-    action: "Try again",
-    tone: "danger",
-    fields: ["hello"],
-  },
-  {
-    id: "loading",
-    label: "Loading State",
-    title: "Please wait",
-    subtitle: "We’re creating your account.",
-    action: "Loading…",
-    tone: "purple",
-    icon: "person",
-  },
-  {
-    id: "server-error",
-    label: "Server Error",
-    title: "Something went wrong.",
-    subtitle: "Please try again.",
-    action: "Try again",
-    tone: "danger",
-    icon: "error",
-  },
-  {
-    id: "account-locked",
-    label: "Account Locked",
-    title: "Too many failed attempts.",
-    subtitle: "Please try again later.",
-    action: "Back to sign in",
-    tone: "danger",
-    icon: "lock",
-  },
-];
-
-const flowLabels: Array<{ id: Flow; label: string }> = [
-  { id: "signup", label: "Sign up flow" },
-  { id: "login", label: "Log in flow" },
-  { id: "alternative", label: "Alternative methods" },
-  { id: "states", label: "States" },
-];
-
-function BrandIcon({ kind }: { kind?: Screen["icon"] }) {
-  if (kind === "check") return <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-500 bg-green-100 text-3xl font-bold text-green-700">✓</div>;
-  if (kind === "lock") return <div className="flex h-16 w-16 items-center justify-center rounded-full border border-violet-300 bg-violet-100 text-3xl">♙</div>;
-  if (kind === "party") return <div className="text-5xl">🎉</div>;
-  if (kind === "error") return <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-300 bg-red-100 text-3xl text-red-600">!</div>;
-  if (kind === "person") return <div className="flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-violet-100 text-3xl text-violet-700">♙</div>;
-  return (
-    <div className="mb-2 text-center">
-      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm">
-        <span className="text-xl">✣</span>
-      </div>
-      <div className="text-4xl font-extrabold tracking-[-0.1em] text-pine">LINK</div>
-    </div>
-  );
-}
-
-function PhoneScreen({
-  screen,
-  onAction,
-}: {
-  screen: Screen;
-  onAction: () => void;
-}) {
-  return (
-    <div className="mx-auto max-w-[350px] rounded-[30px] border border-black/10 bg-white p-3 shadow-[0_16px_35px_rgba(20,24,28,0.12)]">
-      <div className="mb-3 flex items-center justify-between px-2 text-[10px] font-medium text-slate-600">
-        <span>9:41</span><span className="tracking-[0.2em]">◉◉◉</span>
-      </div>
-      <div className="min-h-[500px] rounded-[22px] border border-black/5 bg-[#f8f5f2] p-5">
-        <div className="mb-5 flex justify-center"><BrandIcon kind={screen.icon} /></div>
-        <h2 className="text-center text-xl font-semibold text-slate-800">{screen.title}</h2>
-        <p className="mt-2 text-center text-xs leading-5 text-slate-500">{screen.subtitle}</p>
-        {screen.helper && <p className="mt-3 text-center text-xs leading-5 text-slate-600">{screen.helper}</p>}
-        <div className="mt-6 space-y-2">
-          {screen.fields?.map((field, index) => (
-            <div key={`${field}-${index}`} className={`rounded-xl border bg-white px-3 py-3 text-xs text-slate-500 shadow-sm ${screen.tone === "danger" && index === 0 ? "border-red-400 text-red-600" : "border-black/5"}`}>
-              {field}
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={onAction} className={`mt-5 w-full rounded-xl px-3 py-3 text-xs font-semibold text-white ${screen.tone === "green" ? "bg-gradient-to-b from-[#2d8b5b] to-[#1f7045]" : screen.tone === "danger" ? "bg-red-600" : screen.tone === "neutral" ? "bg-slate-700" : "bg-gradient-to-b from-[#4a3a66] to-[#2d2346]"}`}>
-          {screen.action}
-        </button>
-        {screen.links && <div className="mt-5 space-y-2 text-center text-[10px] text-violet-700">{screen.links.map((link) => <div key={link}>{link}</div>)}</div>}
-      </div>
-    </div>
-  );
-}
+const inputClass =
+  "w-full rounded-xl border border-black/10 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-100";
 
 export default function AuthFlowPage() {
   const [flow, setFlow] = useState<Flow>("signup");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [screenIndex, setScreenIndex] = useState(0);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const currentScreens = flow === "states" ? states : flows[flow];
-  const activeScreen = useMemo(() => currentScreens[activeIndex] ?? currentScreens[0], [activeIndex, currentScreens]);
+  const screens = flowScreens[flow];
+  const current = screens[screenIndex];
+  const supabase = useMemo(() => {
+    try {
+      return createSupabaseBrowserClient();
+    } catch {
+      return null;
+    }
+  }, []);
+  const configured = supabase !== null;
 
-  const selectFlow = (nextFlow: Flow) => {
-    setFlow(nextFlow);
-    setActiveIndex(0);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const callbackError = params.get("error");
+    if (callbackError) setError(callbackError);
+    const requestedFlow = params.get("flow");
+    const requestedScreen = params.get("screen");
+    if (requestedFlow === "login" || requestedFlow === "alternative" || requestedFlow === "signup") {
+      setFlow(requestedFlow);
+      const requestedIndex = flowScreens[requestedFlow].findIndex(
+        (screen) => screen.id === requestedScreen,
+      );
+      if (requestedIndex >= 0) setScreenIndex(requestedIndex);
+    }
+  }, []);
+
+  const selectFlow = (next: Flow) => {
+    setFlow(next);
+    setScreenIndex(0);
+    setMessage("");
+    setError("");
   };
 
-  const next = () => setActiveIndex((value) => Math.min(currentScreens.length - 1, value + 1));
-  const previous = () => setActiveIndex((value) => Math.max(0, value - 1));
+  const goTo = (id: ScreenId) => {
+    const index = screens.findIndex((screen) => screen.id === id);
+    if (index >= 0) setScreenIndex(index);
+  };
+
+  const action = async () => {
+    setMessage("");
+    setError("");
+    if (current.id === "start") {
+      goTo("create");
+      return;
+    }
+    if (current.id === "created") {
+      selectFlow("login");
+      return;
+    }
+    if (current.id === "reset-success") {
+      selectFlow("login");
+      return;
+    }
+    if (current.id === "welcome" || current.id === "logged") {
+      setMessage("This screen is complete.");
+      return;
+    }
+    if (!supabase) {
+      setError("Supabase is not configured. Copy .env.example to .env.local and add your project URL and anon key.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      if (current.id === "create") {
+        if (!fullName.trim() || !email.trim() || password.length < 8) {
+          throw new Error("Enter your name, a valid email, and a password of at least 8 characters.");
+        }
+        if (password !== confirmPassword) throw new Error("Your passwords do not match.");
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: { data: { full_name: fullName.trim() } },
+        });
+        if (signUpError) throw signUpError;
+        if (data.session) goTo("created");
+        else goTo("verify");
+        setMessage("Check your inbox for the verification email.");
+      } else if (current.id === "signin") {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (signInError) throw signInError;
+        goTo("logged");
+      } else if (current.id === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/auth?flow=login&screen=reset`,
+        });
+        if (resetError) throw resetError;
+        setMessage("If an account exists for that email, a reset link is on its way.");
+      } else if (current.id === "reset") {
+        if (password.length < 8 || password !== confirmPassword) {
+          throw new Error("Use at least 8 characters and make both passwords match.");
+        }
+        const { error: updateError } = await supabase.auth.updateUser({ password });
+        if (updateError) throw updateError;
+        goTo("reset-success");
+      } else if (current.id === "phone") {
+        const { error: otpError } = await supabase.auth.signInWithOtp({
+          phone: phone.trim(),
+          options: { shouldCreateUser: true },
+        });
+        if (otpError) throw otpError;
+        goTo("phone-verify");
+        setMessage("Verification code sent by SMS.");
+      } else if (current.id === "phone-verify") {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          phone: phone.trim(),
+          token: code.trim(),
+          type: "sms",
+        });
+        if (verifyError) throw verifyError;
+        setMessage("Phone verified successfully.");
+        setFlow("signup");
+        setScreenIndex(4);
+      } else if (current.id === "social") {
+        const provider: Provider = "google";
+        const { error: oauthError } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: `${window.location.origin}/auth/callback?next=/auth` },
+        });
+        if (oauthError) throw oauthError;
+      } else if (current.id === "guest") {
+        const { error: guestError } = await supabase.auth.signInAnonymously();
+        if (guestError) throw guestError;
+        setMessage("You are browsing as a guest. Create an account later to save your progress.");
+      } else if (current.id === "verify") {
+        const { error: resendError } = await supabase.auth.resend({ type: "signup", email: email.trim() });
+        if (resendError) throw resendError;
+        setMessage("A new verification email has been sent.");
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The auth request failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const renderFields = () => {
+    if (current.id === "create") {
+      return (
+        <>
+          <input aria-label="Full name" className={inputClass} placeholder="Full name" value={fullName} onChange={(event) => setFullName(event.target.value)} />
+          <input aria-label="Email address" className={inputClass} type="email" placeholder="Email address" value={email} onChange={(event) => setEmail(event.target.value)} />
+          <input aria-label="Create password" className={inputClass} type="password" placeholder="Create password" value={password} onChange={(event) => setPassword(event.target.value)} />
+          <input aria-label="Confirm password" className={inputClass} type="password" placeholder="Confirm password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} />
+        </>
+      );
+    }
+    if (current.id === "signin") {
+      return (
+        <>
+          <input aria-label="Email address" className={inputClass} type="email" placeholder="Email address" value={email} onChange={(event) => setEmail(event.target.value)} />
+          <input aria-label="Password" className={inputClass} type="password" placeholder="Your password" value={password} onChange={(event) => setPassword(event.target.value)} />
+        </>
+      );
+    }
+    if (current.id === "forgot") return <input aria-label="Email address" className={inputClass} type="email" placeholder="Email address" value={email} onChange={(event) => setEmail(event.target.value)} />;
+    if (current.id === "reset") return <><input aria-label="New password" className={inputClass} type="password" placeholder="New password" value={password} onChange={(event) => setPassword(event.target.value)} /><input aria-label="Confirm new password" className={inputClass} type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} /></>;
+    if (current.id === "phone") return <input aria-label="Mobile number" className={inputClass} type="tel" placeholder="+44 7025 456789" value={phone} onChange={(event) => setPhone(event.target.value)} />;
+    if (current.id === "phone-verify") return <input aria-label="Verification code" className={inputClass} inputMode="numeric" maxLength={6} placeholder="6-digit code" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))} />;
+    return null;
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 text-ink">
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-pine/80">Sign up / log in</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-pine">Screen-by-screen auth flow</h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">Use the flow tabs and screen controls to walk through every state from the reference.</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-pine">Functional auth screens</h1>
+          <p className="mt-2 max-w-2xl text-sm text-slate-600">Every primary action now calls Supabase Auth. Configure the project before using live requests.</p>
         </div>
-        <Link href="/" className="rounded-full border border-pine/20 bg-white px-4 py-2 text-sm font-medium text-pine transition hover:border-pine/40 hover:bg-sand">Back to overview</Link>
+        <Link href="/" className="rounded-full border border-pine/20 bg-white px-4 py-2 text-sm font-medium text-pine">Back to overview</Link>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        {flowLabels.map((item) => (
-          <button key={item.id} type="button" onClick={() => selectFlow(item.id)} className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition ${flow === item.id ? "border-pine bg-pine text-sand" : "border-pine/20 bg-white text-pine hover:border-pine/50"}`}>
-            {item.label}
-          </button>
-        ))}
-      </div>
+      {!configured && <div className="mb-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">Supabase is not configured yet. Add the two values from <code>.env.example</code> to <code>.env.local</code>, then restart Next.js.</div>}
+      {error && <div role="alert" className="mb-5 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">{error}</div>}
+      {message && <div role="status" className="mb-5 rounded-2xl border border-green-300 bg-green-50 p-4 text-sm text-green-800">{message}</div>}
 
       <div className="mb-6 flex flex-wrap gap-2">
-        {currentScreens.map((screen, index) => (
-          <button key={screen.id} type="button" onClick={() => setActiveIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${index === activeIndex ? "border-violet-500 bg-violet-100 text-violet-800" : "border-pine/10 bg-white text-slate-600 hover:border-violet-300"}`}>
-            {index + 1}. {screen.label}
-          </button>
+        {(Object.keys(flowScreens) as Flow[]).map((item) => (
+          <button key={item} type="button" onClick={() => selectFlow(item)} className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] ${flow === item ? "border-pine bg-pine text-sand" : "border-pine/20 bg-white text-pine"}`}>{item === "signup" ? "Sign up flow" : item === "login" ? "Log in flow" : "Alternative methods"}</button>
         ))}
+      </div>
+      <div className="mb-6 flex flex-wrap gap-2">
+        {screens.map((screen, index) => <button key={screen.id} type="button" onClick={() => setScreenIndex(index)} className={`rounded-lg border px-3 py-2 text-xs ${index === screenIndex ? "border-violet-500 bg-violet-100 text-violet-800" : "border-pine/10 bg-white text-slate-600"}`}>{index + 1}. {screen.label}</button>)}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="rounded-[28px] border border-pine/10 bg-[#f7f4f1] p-4 shadow-card sm:p-8">
-          <PhoneScreen screen={activeScreen} onAction={next} />
+          <div className="mx-auto max-w-[350px] rounded-[30px] border border-black/10 bg-white p-3 shadow-xl">
+            <div className="mb-3 flex justify-between px-2 text-[10px] text-slate-600"><span>9:41</span><span>◉◉◉</span></div>
+            <div className="min-h-[490px] rounded-[22px] bg-[#f8f5f2] p-5">
+              <div className="mb-5 text-center"><div className="text-4xl font-extrabold tracking-[-0.1em] text-pine">LINK</div><p className="mt-2 text-xs text-slate-500">{current.label}</p></div>
+              <h2 className="text-center text-xl font-semibold text-slate-800">{current.id === "start" ? "Welcome" : current.id === "created" ? "Your account is ready!" : current.id === "logged" ? "Welcome back!" : current.id === "welcome" ? "Welcome to LINK!" : current.id === "guest" ? "Continue as guest?" : current.id === "reset-success" ? "Password reset successful" : current.label}</h2>
+              <p className="mt-2 text-center text-xs leading-5 text-slate-500">{current.id === "create" ? "Let’s get started" : current.id === "signin" ? "Welcome back! Please sign in to continue." : current.id === "verify" ? "We’ve sent a verification link to your email." : "Use the controls below to complete this step."}</p>
+              <div className="mt-6 space-y-2">{renderFields()}</div>
+              <button type="button" onClick={action} disabled={busy} className="mt-5 w-full rounded-xl bg-gradient-to-b from-[#4a3a66] to-[#2d2346] px-3 py-3 text-xs font-semibold text-white disabled:opacity-50">{busy ? "Please wait…" : current.id === "start" ? "Create account" : current.id === "signin" ? "Sign in" : current.id === "forgot" ? "Send reset link" : current.id === "phone" ? "Send code" : current.id === "phone-verify" ? "Verify code" : current.id === "reset" ? "Reset password" : current.id === "guest" ? "Continue as guest" : current.id === "social" ? "Continue with Google" : current.id === "verify" ? "Resend email" : current.id === "created" ? "Continue to sign in" : current.id === "reset-success" ? "Go to sign in" : current.id === "welcome" ? "Tell us about you" : "Continue"}</button>
+              {current.id === "signin" && <button type="button" onClick={() => goTo("forgot")} className="mt-4 w-full text-center text-xs text-violet-700">Forgot password?</button>}
+              {current.id === "social" && <button type="button" onClick={() => { if (!supabase) { setError("Supabase is not configured."); return; } void supabase.auth.signInWithOAuth({ provider: "apple", options: { redirectTo: `${window.location.origin}/auth/callback?next=/auth` } }).then(({ error: oauthError }) => { if (oauthError) setError(oauthError.message); }); }} className="mt-3 w-full text-center text-xs text-violet-700">Continue with Apple</button>}
+            </div>
+          </div>
         </div>
         <aside className="rounded-[28px] border border-pine/10 bg-white/70 p-5 shadow-card">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-pine/80">Current screen</p>
-          <h2 className="mt-2 text-2xl font-semibold text-pine">{activeScreen.label}</h2>
-          <div className="mt-5 rounded-2xl border border-pine/10 bg-sand p-4">
-            <p className="text-sm font-medium text-pine">Interaction</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">The primary button advances to the next screen in this flow. Select any step above to jump directly to it.</p>
-          </div>
-          <div className="mt-5 flex gap-3">
-            <button type="button" onClick={previous} disabled={activeIndex === 0} className="flex-1 rounded-full border border-pine/20 bg-white px-4 py-3 text-sm font-medium text-pine disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
-            <button type="button" onClick={next} disabled={activeIndex === currentScreens.length - 1} className="flex-1 rounded-full bg-pine px-4 py-3 text-sm font-medium text-sand disabled:cursor-not-allowed disabled:opacity-40">Next</button>
-          </div>
-          <div className="mt-6 border-t border-pine/10 pt-5">
-            <p className="text-sm font-medium text-pine">Included in this prototype</p>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-              <li>• Email sign-up and verification</li>
-              <li>• Login, forgot password and reset success</li>
-              <li>• Phone, social and guest alternatives</li>
-              <li>• Error, loading and locked account states</li>
-            </ul>
-          </div>
+          <h2 className="mt-2 text-2xl font-semibold text-pine">{current.label}</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600">Primary actions call Supabase Auth APIs. OAuth returns through <code>/auth/callback</code>; email and SMS verification use Supabase’s configured templates and providers.</p>
+          <div className="mt-5 flex gap-3"><button type="button" onClick={() => setScreenIndex((value) => Math.max(0, value - 1))} disabled={screenIndex === 0} className="flex-1 rounded-full border border-pine/20 bg-white px-4 py-3 text-sm text-pine disabled:opacity-40">Previous</button><button type="button" onClick={() => setScreenIndex((value) => Math.min(screens.length - 1, value + 1))} disabled={screenIndex === screens.length - 1} className="flex-1 rounded-full bg-pine px-4 py-3 text-sm text-sand disabled:opacity-40">Next</button></div>
         </aside>
       </div>
     </div>

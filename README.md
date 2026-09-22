@@ -10,10 +10,27 @@ Node 20 is enough. If `node` is not on your PATH, this machine also has a copy a
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+### Supabase authentication
+
+The `/auth` screen uses Supabase Auth for:
+
+- Email/password sign-up, email verification, sign-in, and password reset
+- Phone OTP sign-up and verification
+- Google and Apple OAuth
+- Anonymous guest sessions
+
+Create a Supabase project, copy its project URL and anon key into `.env.local`,
+and enable the providers you want in Supabase Authentication settings. Add
+`http://localhost:3000/auth/callback` as an allowed redirect URL (and the
+production callback URL when deployed). Email and SMS delivery use the
+templates/providers configured in Supabase; no credentials are stored in this
+repository.
 
 ## What this MVP includes
 
