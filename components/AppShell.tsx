@@ -14,6 +14,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     document.documentElement.dataset.contrast = contrast ? "high" : "normal";
   }, [contrast, textSize]);
 
+  if (pathname === "/") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen text-ink">
       <a className="skip-link" href="#main">
