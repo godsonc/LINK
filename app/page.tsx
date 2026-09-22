@@ -315,6 +315,12 @@ export default function HomePage() {
         <header className="page-header">
           <h1>LINK — Sign Up / Log In</h1>
           <p>Users can create an account or sign in using email, phone or social accounts.</p>
+          <a
+            href="/auth"
+            className="mt-4 inline-flex rounded-full border border-pine/20 bg-white px-4 py-2 text-sm font-medium text-pine transition hover:border-pine/40 hover:bg-sand"
+          >
+            View screen-by-screen flow
+          </a>
         </header>
 
         <section className="flow-block">
