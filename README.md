@@ -10,6 +10,7 @@ Node 20 is enough. If `node` is not on your PATH, this machine also has a copy a
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
