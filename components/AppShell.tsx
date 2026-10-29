@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { UserMenu } from "@/components/UserMenu";
+import { useAuth } from "@/lib/auth-context";
+import { useDisplayPrefs } from "@/lib/display-prefs";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [textSize, setTextSize] = useState("112%");
-  const [contrast, setContrast] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty("--font-size", textSize);
-    document.documentElement.dataset.contrast = contrast ? "high" : "normal";
-  }, [contrast, textSize]);
+  const { user, isGuest, ready } = useAuth();
+  const { textSize, contrast, toggleTextSize, toggleContrast } =
+    useDisplayPrefs();
+  const isAuthRoute =
+    pathname.startsWith("/login") || pathname.startsWith("/auth");
 
   return (
     <div className="min-h-screen text-ink">
@@ -59,33 +59,44 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link className={navClass(pathname, "/privacy")} href="/privacy">
               Privacy
             </Link>
+            {ready && user ? null : (
+              <Link className={navClass(pathname, "/login")} href="/login">
+                {isGuest ? "Create account" : "Sign in"}
+              </Link>
+            )}
           </nav>
           <div className="flex items-center gap-2 text-sm">
-            <button
-              className="rounded-full border border-pine/20 px-3 py-1"
-              type="button"
-              onClick={() =>
-                setTextSize((size) => (size === "112%" ? "128%" : "112%"))
-              }
-            >
-              {textSize === "112%" ? "Larger text" : "Standard text"}
-            </button>
-            <button
-              className="rounded-full border border-pine/20 px-3 py-1"
-              type="button"
-              onClick={() => setContrast((value) => !value)}
-            >
-              {contrast ? "Standard contrast" : "High contrast"}
-            </button>
+            {ready && user ? (
+              <UserMenu />
+            ) : (
+              <>
+                <button
+                  className="rounded-full border border-pine/20 px-3 py-1"
+                  type="button"
+                  onClick={toggleTextSize}
+                >
+                  {textSize === "112%" ? "Larger text" : "Standard text"}
+                </button>
+                <button
+                  className="rounded-full border border-pine/20 px-3 py-1"
+                  type="button"
+                  onClick={toggleContrast}
+                >
+                  {contrast ? "Standard contrast" : "High contrast"}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
-      <div className="bg-clay text-paper">
-        <p className="mx-auto max-w-6xl px-4 py-2 text-sm">
-          If you or someone else is in immediate danger, call 999. LINK is not an
-          emergency or statutory service.
-        </p>
-      </div>
+      {isAuthRoute ? null : (
+        <div className="bg-clay text-paper">
+          <p className="mx-auto max-w-6xl px-4 py-2 text-sm">
+            If you or someone else is in immediate danger, call 999. LINK is not an
+            emergency or statutory service.
+          </p>
+        </div>
+      )}
       <main id="main" className="mx-auto max-w-6xl px-4 py-10">
         {children}
       </main>

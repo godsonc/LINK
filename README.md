@@ -32,4 +32,17 @@ LINK does not replace social workers, statutory assessments, medical diagnosis, 
 
 ## Data
 
-Guest session and admin board use `localStorage` so you can demonstrate the loop on one machine without accounts. Production would use authenticated APIs, PostgreSQL, and proper retention.
+Auth uses Supabase. Guest session and admin board still use `localStorage` so you can demonstrate the loop on one machine without accounts. Production would persist pathways, referrals and cases in PostgreSQL with proper retention.
+
+## Supabase
+
+Keys live in `.env.local` (see `.env.example`). Server Components, Server Actions and Route Handlers use `lib/supabase/server.ts`. Browser forms use `lib/supabase/client.ts`. `middleware.ts` refreshes the auth cookie on each request.
+
+In the Supabase dashboard, add these Redirect URLs:
+
+- `http://localhost:3000/auth/callback`
+- `http://localhost:3000/auth/confirm`
+
+Email sign-up and password reset work with the default Auth settings. Google, Apple and phone SMS need those providers enabling in Authentication → Providers.
+
+Optional: run `supabase/ migrations/20261025120000_profiles.sql` in the SQL editor if you want a `profiles` table with row-level security.

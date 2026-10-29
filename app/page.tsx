@@ -43,6 +43,12 @@ export default function HomePage() {
           >
             Speak to a Community Navigator
           </Link>
+          <Link
+            href="/login"
+            className="rounded-full border border-pine/20 px-6 py-3 font-medium"
+          >
+            Sign in / create account
+          </Link>
         </div>
         <div className="mt-10">
           <p className="text-sm font-medium text-pine">Try an example</p>

@@ -1,0 +1,6 @@
+project_id = "lincolnshire-link"
+
+[auth.email]
+# The built-in Supabase mailer allows two emails an hour. Keep confirmation
+# off until a custom SMTP server is connected.
+enable_confirmations = false
