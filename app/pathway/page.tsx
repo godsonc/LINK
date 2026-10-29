@@ -24,11 +24,11 @@ export default function PathwayPage() {
     return (
       <div className="rounded-3xl bg-paper p-8 shadow-card">
         <h1 className="text-3xl font-semibold">Your pathway will appear here</h1>
-        <p className="mt-3 text-pine">
+        <p className="mt-3 text-muted">
           Start by telling us what is happening. We only recommend verified
           services from the local directory.
         </p>
-        <Link className="mt-4 inline-block text-clay" href="/discover">
+        <Link className="mt-4 inline-block text-brand" href="/discover">
           Describe your situation
         </Link>
       </div>
@@ -38,11 +38,11 @@ export default function PathwayPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-clay">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
           Personalised pathway
         </p>
         <h1 className="mt-2 text-4xl font-semibold">Your recommended pathway</h1>
-        <p className="mt-3 max-w-3xl text-lg text-pine">
+        <p className="mt-3 max-w-3xl text-lg text-muted">
           This is not a search result list. It is a sequence based on what you
           told us. Based on the information you provided, you may be eligible —
           organisations make the final decision.
@@ -55,13 +55,13 @@ export default function PathwayPage() {
           return (
             <li
               key={step.needId}
-              className="rounded-3xl border border-pine/10 bg-paper p-6 shadow-card"
+              className="rounded-3xl border border-line/15 bg-paper p-6 shadow-card"
             >
-              <p className="text-sm text-clay">Step {index + 1}</p>
+              <p className="text-sm text-brand">Step {index + 1}</p>
               <h2 className="text-2xl font-semibold">
                 {NEED_COPY[step.needId].pathwayTitle}
               </h2>
-              <p className="mt-2 text-pine">{step.why}</p>
+              <p className="mt-2 text-muted">{step.why}</p>
               {service ? (
                 <p className="mt-2 font-medium">
                   Suggested: {service.name} — {service.organisation}
@@ -76,10 +76,10 @@ export default function PathwayPage() {
         <h2 className="text-3xl font-semibold">Your next three steps</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {session.nextSteps.map((step, index) => (
-            <article key={step.id} className="rounded-3xl bg-pine p-5 text-sand">
-              <p className="text-sm text-wheat">Step {index + 1}</p>
+            <article key={step.id} className="rounded-3xl bg-brand p-5 text-paper">
+              <p className="text-sm text-paper/80">Step {index + 1}</p>
               <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sand/90">{step.detail}</p>
+              <p className="mt-2 text-paper/90">{step.detail}</p>
               {step.serviceId ? (
                 <Link
                   className="mt-4 inline-block underline"
@@ -106,13 +106,13 @@ export default function PathwayPage() {
 
       <div className="flex flex-wrap gap-3">
         <Link
-          className="rounded-full bg-clay px-5 py-3 font-medium text-paper"
+          className="rounded-full bg-brand px-5 py-3 font-medium text-paper"
           href="/help"
         >
           Need someone to help?
         </Link>
         <Link
-          className="rounded-full border border-pine/20 px-5 py-3"
+          className="rounded-full border border-line/30 px-5 py-3"
           href="/follow-up"
         >
           Later: tell us if you got the help

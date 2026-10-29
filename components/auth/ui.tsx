@@ -14,7 +14,7 @@ export function AuthCard({
   return (
     <div className="mx-auto w-full max-w-md rounded-[2rem] bg-paper p-7 shadow-card">
       <Link href="/login" className="mb-6 flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-pine text-sand">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-paper">
           <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden>
             <path
               d="M6 22c6-2 8-12 20-12"
@@ -30,17 +30,17 @@ export function AuthCard({
         </span>
         <span>
           <span className="block text-lg font-semibold tracking-tight">LINK</span>
-          <span className="block text-sm text-pine/80">
+          <span className="block text-sm text-muted">
             Lincolnshire Inclusion &amp; Navigation Network
           </span>
         </span>
       </Link>
       <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
       {subtitle ? (
-        <p className="mt-2 text-base leading-relaxed text-pine">{subtitle}</p>
+        <p className="mt-2 text-base leading-relaxed text-muted">{subtitle}</p>
       ) : null}
       <div className="mt-6">{children}</div>
-      {footer ? <div className="mt-6 text-sm text-pine">{footer}</div> : null}
+      {footer ? <div className="mt-6 text-sm text-muted">{footer}</div> : null}
     </div>
   );
 }
@@ -77,11 +77,11 @@ export function TextField({
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className="min-h-11 w-full rounded-2xl border border-pine/15 bg-sand px-4 py-2.5 outline-none placeholder:text-pine/50"
+        className="min-h-target w-full rounded-2xl border border-line/20 bg-field px-4 py-2.5 outline-none placeholder:text-muted/60"
         {...props}
       />
       {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-sm text-clay" role="alert">
+        <p id={`${id}-error`} className="mt-1.5 text-sm text-danger" role="alert">
           {error}
         </p>
       ) : null}
@@ -96,7 +96,7 @@ export function PrimaryButton({
   return (
     <button
       type="submit"
-      className="min-h-11 w-full rounded-full bg-pine px-5 py-3 font-medium text-sand disabled:opacity-60"
+      className="min-h-target w-full rounded-full bg-brand px-5 py-3 font-medium text-paper disabled:opacity-60"
       {...props}
     >
       {children}
@@ -111,7 +111,7 @@ export function SecondaryButton({
   return (
     <button
       type="button"
-      className="min-h-11 w-full rounded-full border border-pine/20 px-5 py-3 font-medium"
+      className="min-h-target w-full rounded-full border border-line/30 px-5 py-3 font-medium"
       {...props}
     >
       {children}
@@ -127,7 +127,7 @@ export function TextLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} className="font-medium text-pine underline-offset-4 hover:underline">
+    <Link href={href} className="font-medium text-muted underline-offset-4 hover:underline">
       {children}
     </Link>
   );
@@ -147,8 +147,8 @@ export function Banner({
       role="alert"
       className={`rounded-2xl border px-4 py-3 text-sm ${
         tone === "error"
-          ? "border-clay/40 bg-clay/10 text-clay"
-          : "border-pine/15 bg-moss/10 text-pine"
+          ? "border-danger/40 bg-danger/15 text-danger"
+          : "border-line/20 bg-success/15 text-muted"
       }`}
     >
       <p className="font-semibold">{title}</p>

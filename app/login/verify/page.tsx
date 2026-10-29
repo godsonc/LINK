@@ -57,7 +57,7 @@ export default function VerifyEmailPage() {
       <div className="space-y-4">
         {error ? <Banner tone="error" title={error} /> : null}
         {message ? <Banner tone="info" title={message} /> : null}
-        <p className="text-sm text-pine">Didn’t receive it?</p>
+        <p className="text-sm text-muted">Didn’t receive it?</p>
         <PrimaryButton type="button" disabled={busy} onClick={resend}>
           {busy ? "Sending…" : "Resend email"}
         </PrimaryButton>

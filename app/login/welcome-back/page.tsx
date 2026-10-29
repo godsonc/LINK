@@ -14,7 +14,7 @@ export default function WelcomeBackPage() {
       title="Welcome back!"
       subtitle={`You’re successfully signed in${user?.email ? ` as ${user.email}` : ""}.`}
     >
-      <p className="mb-4 text-pine">Hello {name}.</p>
+      <p className="mb-4 text-muted">Hello {name}.</p>
       <PrimaryButton type="button" onClick={() => router.push("/")}>
         Continue
       </PrimaryButton>

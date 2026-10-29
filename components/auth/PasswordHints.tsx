@@ -13,7 +13,7 @@ export function PasswordHints({ checks }: { checks: PasswordChecks }) {
       {RULES.map((rule) => (
         <li
           key={rule.key}
-          className={checks[rule.key] ? "text-moss" : "text-pine/70"}
+          className={checks[rule.key] ? "text-success" : "text-muted"}
         >
           {checks[rule.key] ? "✓" : "○"} {rule.label}
         </li>

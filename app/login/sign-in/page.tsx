@@ -112,7 +112,7 @@ function SignInForm() {
           <TextLink href="/login/forgot">Forgot password?</TextLink>
         </p>
         <PrimaryButton disabled={busy}>{busy ? "Signing in…" : "Sign in"}</PrimaryButton>
-        <p className="text-center text-sm text-pine">or continue with</p>
+        <p className="text-center text-sm text-muted">or continue with</p>
         <div className="grid grid-cols-2 gap-3">
           <SecondaryButton disabled={busy} onClick={() => oauth("google")}>
             Google

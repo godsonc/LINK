@@ -18,7 +18,7 @@ export default function GuestPage() {
       title="Continue as guest?"
       subtitle="You can explore LINK with limited access. Create an account later to save your pathway, referrals and follow-up."
     >
-      <ul className="mb-6 list-disc space-y-1 pl-5 text-sm text-pine">
+      <ul className="mb-6 list-disc space-y-1 pl-5 text-sm text-muted">
         <li>View opportunities</li>
         <li>Describe a situation</li>
         <li>See local services</li>

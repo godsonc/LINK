@@ -17,11 +17,11 @@ export default function AdminPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-clay">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
           MVP admin
         </p>
         <h1 className="mt-2 text-4xl font-semibold">Navigator and verification board</h1>
-        <p className="mt-3 max-w-3xl text-pine">
+        <p className="mt-3 max-w-3xl text-muted">
           This board is stored in your browser so the demo can show referrals,
           case escalation, capacity and audit history without a server login.
         </p>
@@ -37,17 +37,17 @@ export default function AdminPage() {
       <section className="rounded-3xl bg-paper p-6 shadow-card">
         <h2 className="text-2xl font-semibold">Referrals</h2>
         {board.referrals.length === 0 ? (
-          <p className="mt-2 text-pine">No referrals yet.</p>
+          <p className="mt-2 text-muted">No referrals yet.</p>
         ) : (
           <ul className="mt-4 space-y-3">
             {board.referrals.map((item) => (
-              <li key={item.id} className="rounded-2xl border border-pine/10 p-4">
+              <li key={item.id} className="rounded-2xl border border-line/15 p-4">
                 <p className="font-medium">{item.serviceName}</p>
-                <p className="text-sm text-pine">
+                <p className="text-sm text-muted">
                   {item.contactName} · {item.contactPhone} · {localityById(item.locality).name}
                 </p>
                 <select
-                  className="mt-2 rounded-full border border-pine/15 bg-sand px-3 py-1"
+                  className="mt-2 rounded-full border border-line/20 bg-field px-3 py-1"
                   value={item.status}
                   onChange={(event) =>
                     updateReferralStatus(
@@ -70,16 +70,16 @@ export default function AdminPage() {
       <section className="rounded-3xl bg-paper p-6 shadow-card">
         <h2 className="text-2xl font-semibold">Navigator cases</h2>
         {board.cases.length === 0 ? (
-          <p className="mt-2 text-pine">No open navigator cases.</p>
+          <p className="mt-2 text-muted">No open navigator cases.</p>
         ) : (
           <ul className="mt-4 space-y-3">
             {board.cases.map((item) => (
-              <li key={item.id} className="rounded-2xl border border-pine/10 p-4">
+              <li key={item.id} className="rounded-2xl border border-line/15 p-4">
                 <p className="font-medium">{item.reason}</p>
-                <p className="text-sm text-pine">{item.story}</p>
+                <p className="text-sm text-muted">{item.story}</p>
                 <p className="text-sm">Contact: {item.preferredContact}</p>
                 <select
-                  className="mt-2 rounded-full border border-pine/15 bg-sand px-3 py-1"
+                  className="mt-2 rounded-full border border-line/20 bg-field px-3 py-1"
                   value={item.status}
                   onChange={(event) =>
                     updateCaseStatus(
@@ -106,14 +106,14 @@ export default function AdminPage() {
             return (
               <div
                 key={service.id}
-                className="grid gap-3 rounded-2xl border border-pine/10 p-4 md:grid-cols-[1fr_auto_auto]"
+                className="grid gap-3 rounded-2xl border border-line/15 p-4 md:grid-cols-[1fr_auto_auto]"
               >
                 <div>
                   <p className="font-medium">{service.name}</p>
-                  <p className="text-sm text-pine">{service.organisation}</p>
+                  <p className="text-sm text-muted">{service.organisation}</p>
                 </div>
                 <select
-                  className="rounded-full border border-pine/15 bg-sand px-3 py-1"
+                  className="rounded-full border border-line/20 bg-field px-3 py-1"
                   value={live.capacity}
                   onChange={(event) =>
                     updateService(service.id, {
@@ -126,7 +126,7 @@ export default function AdminPage() {
                   <option value="full">Full</option>
                 </select>
                 <select
-                  className="rounded-full border border-pine/15 bg-sand px-3 py-1"
+                  className="rounded-full border border-line/20 bg-field px-3 py-1"
                   value={live.verification}
                   onChange={(event) =>
                     updateService(service.id, {
@@ -161,7 +161,7 @@ export default function AdminPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-3xl bg-paper p-5 shadow-card">
-      <p className="text-sm text-pine">{label}</p>
+      <p className="text-sm text-muted">{label}</p>
       <p className="mt-2 text-3xl font-semibold">{value}</p>
     </div>
   );

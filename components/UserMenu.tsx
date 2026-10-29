@@ -45,7 +45,7 @@ export function UserMenu() {
     <div className="relative" ref={rootRef}>
       <button
         type="button"
-        className="flex h-11 w-11 items-center justify-center rounded-full bg-pine text-lg font-semibold text-sand"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-lg font-semibold text-paper"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
@@ -58,13 +58,13 @@ export function UserMenu() {
         <div
           id={menuId}
           role="menu"
-          className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-pine/10 bg-paper py-1 shadow-card"
+          className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-line/15 bg-paper py-1 shadow-card"
         >
-          <p className="truncate px-4 py-2 text-sm text-pine">{label}</p>
+          <p className="truncate px-4 py-2 text-sm text-muted">{label}</p>
           <Link
             role="menuitem"
             href="/profile"
-            className="block px-4 py-2.5 text-sm font-medium hover:bg-sand"
+            className="block px-4 py-2.5 text-sm font-medium hover:bg-field"
             onClick={() => setOpen(false)}
           >
             Profile
@@ -72,7 +72,7 @@ export function UserMenu() {
           <Link
             role="menuitem"
             href="/settings"
-            className="block px-4 py-2.5 text-sm font-medium hover:bg-sand"
+            className="block px-4 py-2.5 text-sm font-medium hover:bg-field"
             onClick={() => setOpen(false)}
           >
             Settings
@@ -80,7 +80,7 @@ export function UserMenu() {
           <button
             type="button"
             role="menuitem"
-            className="block w-full px-4 py-2.5 text-left text-sm font-medium text-red-700 hover:bg-sand"
+            className="block w-full px-4 py-2.5 text-left text-sm font-medium text-red-700 hover:bg-field"
             onClick={handleLogout}
           >
             Logout

@@ -148,7 +148,7 @@ export default function SignUpPage() {
           </span>
         </label>
         {fieldErrors.terms ? (
-          <p className="text-sm text-clay" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {fieldErrors.terms}
           </p>
         ) : null}

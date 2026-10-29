@@ -37,7 +37,7 @@ function GetStarted() {
         </SecondaryButton>
         <button
           type="button"
-          className="min-h-11 w-full py-3 text-sm font-medium text-pine"
+          className="min-h-11 w-full py-3 text-sm font-medium text-muted"
           onClick={() => {
             continueAsGuest();
             router.push("/login/guest");

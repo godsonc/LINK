@@ -70,18 +70,18 @@ export default function DiscoverPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-clay">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
           Needs discovery
         </p>
         <h1 className="mt-2 text-4xl font-semibold">What can we help you with?</h1>
-        <p className="mt-3 text-lg text-pine">
+        <p className="mt-3 text-lg text-muted">
           Write in your own words. There is no wrong door. We only ask a few
           follow-up questions based on what you tell us.
         </p>
       </header>
 
       {session.safeguarding ? (
-        <section className="rounded-3xl bg-clay p-6 text-paper">
+        <section className="rounded-3xl bg-danger p-6 text-paper">
           <h2 className="text-2xl font-semibold">If you are not safe right now</h2>
           <p className="mt-2 leading-relaxed">
             LINK cannot provide emergency help. If you or someone else is in
@@ -104,7 +104,7 @@ export default function DiscoverPage() {
         </label>
         <textarea
           id="story"
-          className="mt-2 w-full rounded-2xl border border-pine/15 bg-sand p-4 text-lg"
+          className="mt-2 w-full rounded-2xl border border-line/20 bg-field p-4 text-lg"
           rows={6}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -113,7 +113,7 @@ export default function DiscoverPage() {
           <label className="text-sm font-medium">
             Roughly where are you?
             <select
-              className="mt-2 w-full rounded-full border border-pine/15 bg-sand px-4 py-2"
+              className="mt-2 w-full rounded-full border border-line/20 bg-field px-4 py-2"
               value={locality}
               onChange={(event) =>
                 setLocality(event.target.value as typeof locality)
@@ -129,14 +129,14 @@ export default function DiscoverPage() {
           <div className="flex items-end gap-2">
             <button
               type="button"
-              className="rounded-full border border-pine/20 px-4 py-2"
+              className="rounded-full border border-line/30 px-4 py-2"
               onClick={startVoice}
             >
               {listening ? "Listening…" : "Speak instead"}
             </button>
             <button
               type="button"
-              className="rounded-full bg-pine px-4 py-2 font-medium text-sand"
+              className="rounded-full bg-brand px-4 py-2 font-medium text-paper"
               onClick={() => setStory(draft, locality)}
               disabled={!draft.trim() || (session.safeguarding && !session.safeguardingAcknowledged)}
             >
@@ -152,7 +152,7 @@ export default function DiscoverPage() {
             <h2 className="text-2xl font-semibold">
               We think you may need help with
             </h2>
-            <p className="mt-2 text-pine">
+            <p className="mt-2 text-muted">
               Untick anything that is not relevant. You can add another area.
             </p>
             <div className="mt-4 grid gap-2">
@@ -162,7 +162,7 @@ export default function DiscoverPage() {
                 return (
                   <label
                     key={id}
-                    className="flex items-start gap-3 rounded-2xl border border-pine/10 p-3"
+                    className="flex items-start gap-3 rounded-2xl border border-line/15 p-3"
                   >
                     <input
                       type="checkbox"
@@ -173,7 +173,7 @@ export default function DiscoverPage() {
                     <span>
                       <span className="block font-medium">{NEED_COPY[id].label}</span>
                       {found ? (
-                        <span className="block text-sm text-pine">{found.reason}</span>
+                        <span className="block text-sm text-muted">{found.reason}</span>
                       ) : null}
                     </span>
                   </label>
@@ -207,7 +207,7 @@ export default function DiscoverPage() {
             </div>
             <button
               type="button"
-              className="mt-6 rounded-full bg-clay px-5 py-3 font-medium text-paper"
+              className="mt-6 rounded-full bg-brand px-5 py-3 font-medium text-paper"
               onClick={() => {
                 confirmNeeds();
                 router.push("/pathway");
