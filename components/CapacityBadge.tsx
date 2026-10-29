@@ -6,9 +6,9 @@ export function CapacityBadge({
   capacity: "available" | "limited" | "full";
 }) {
   const copy = {
-    available: { label: "Accepting referrals", className: "bg-moss/15 text-moss" },
-    limited: { label: "Limited spaces", className: "bg-wheat text-ink" },
-    full: { label: "Currently full", className: "bg-clay/15 text-clay" },
+    available: { label: "Accepting referrals", className: "bg-success/15 text-success" },
+    limited: { label: "Limited spaces", className: "bg-warning text-ink" },
+    full: { label: "Currently full", className: "bg-danger/15 text-danger" },
   }[capacity];
   return (
     <span className={`inline-flex rounded-full px-3 py-1 text-sm ${copy.className}`}>

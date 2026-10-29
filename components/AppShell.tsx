@@ -1,116 +1,163 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import type { ReactNode } from "react";
+import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/lib/auth-context";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+const TABS = [
+  { href: "/", label: "Home" },
+  { href: "/pathway", label: "Pathways" },
+  { href: "/messages", label: "Messages" },
+  { href: "/bookings", label: "Bookings" },
+  { href: "/profile", label: "Profile" },
+] as const;
+
+function titleFor(pathname: string) {
+  if (pathname.startsWith("/services/")) return "Opportunity";
+  if (pathname.startsWith("/pathway")) return "Your pathway";
+  if (pathname.startsWith("/messages")) return "Messages";
+  if (pathname.startsWith("/bookings")) return "Bookings";
+  if (pathname.startsWith("/profile")) return "Profile";
+  if (pathname.startsWith("/settings")) return "Settings";
+  if (pathname.startsWith("/who")) return "Who is this for?";
+  if (pathname.startsWith("/about")) return "About you";
+  if (pathname.startsWith("/discover")) return "How can we help?";
+  if (pathname.startsWith("/help")) return "Assisted access";
+  if (pathname.startsWith("/saved")) return "Saved items";
+  if (pathname.startsWith("/feedback")) return "Feedback";
+  if (pathname.startsWith("/follow-up")) return "Follow up";
+  if (pathname.startsWith("/privacy")) return "Privacy";
+  if (pathname.startsWith("/admin")) return "Navigator";
+  return "LINK";
+}
+
+function tabActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [textSize, setTextSize] = useState("112%");
-  const [contrast, setContrast] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty("--font-size", textSize);
-    document.documentElement.dataset.contrast = contrast ? "high" : "normal";
-  }, [contrast, textSize]);
-
-  if (pathname === "/") {
-    return <>{children}</>;
-  }
+  const router = useRouter();
+  const { user } = useAuth();
+  const isAuthRoute =
+    pathname.startsWith("/login") || pathname.startsWith("/auth");
+  const isHome = pathname === "/";
+  const showChrome = !isAuthRoute && !isHome;
+  const isTabRoot = TABS.some((tab) => tab.href === pathname);
+  const signedIn = Boolean(user);
 
   return (
-    <div className="min-h-screen text-ink">
-      <a className="skip-link" href="#main">
+    <div
+      className={`flex flex-col bg-canvas text-ink ${
+        showChrome ? "mx-auto h-dvh max-w-md" : "min-h-screen"
+      }`}
+    >
+      <a
+        href="#main"
+        className="skip-link absolute left-4 z-50 rounded-full bg-brand px-4 py-2 text-paper"
+      >
         Skip to content
       </a>
-      <header className="border-b border-pine/15 bg-paper/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-pine text-sand">
-              <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden>
-                <path
-                  d="M6 22c6-2 8-12 20-12"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                />
-                <circle cx="8" cy="22" r="2.2" fill="currentColor" />
-                <circle cx="16" cy="14" r="2.2" fill="currentColor" />
-                <circle cx="26" cy="10" r="2.2" fill="currentColor" />
-              </svg>
-            </span>
-            <span>
-              <span className="block text-lg font-semibold tracking-tight">LINK</span>
-              <span className="block text-sm text-pine/80">
-                From need to opportunity
-              </span>
-            </span>
-          </Link>
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium">
-            <Link className={navClass(pathname, "/")} href="/">
-              Home
-            </Link>
-            <Link className={navClass(pathname, "/discover")} href="/discover">
-              Get help
-            </Link>
-            <Link className={navClass(pathname, "/help")} href="/help">
-              Navigator
-            </Link>
-            <Link className={navClass(pathname, "/admin")} href="/admin">
-              Admin
-            </Link>
-            <Link className={navClass(pathname, "/privacy")} href="/privacy">
-              Privacy
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2 text-sm">
-            <button
-              className="rounded-full border border-pine/20 px-3 py-1"
-              type="button"
-              onClick={() =>
-                setTextSize((size) => (size === "112%" ? "128%" : "112%"))
-              }
-            >
-              {textSize === "112%" ? "Larger text" : "Standard text"}
-            </button>
-            <button
-              className="rounded-full border border-pine/20 px-3 py-1"
-              type="button"
-              onClick={() => setContrast((value) => !value)}
-            >
-              {contrast ? "Standard contrast" : "High contrast"}
-            </button>
+      {showChrome ? (
+        <header className="shrink-0 border-b border-line/10 bg-paper">
+          <div className="flex h-14 items-center gap-2 px-3">
+            {isTabRoot ? (
+              <span className="w-11" />
+            ) : (
+              <button
+                type="button"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-2xl text-brand"
+                onClick={() => router.back()}
+                aria-label="Go back"
+              >
+                ‹
+              </button>
+            )}
+            <h1 className="flex-1 truncate text-center text-base font-semibold">
+              {titleFor(pathname)}
+            </h1>
+            {signedIn ? <UserMenu /> : <span className="w-11" />}
           </div>
-        </div>
-      </header>
-      <div className="bg-clay text-paper">
-        <p className="mx-auto max-w-6xl px-4 py-2 text-sm">
-          If you or someone else is in immediate danger, call 999. LINK is not an
-          emergency or statutory service.
-        </p>
-      </div>
-      <main id="main" className="mx-auto max-w-6xl px-4 py-10">
+        </header>
+      ) : null}
+      <main
+        id="main"
+        className={
+          isHome || isAuthRoute
+            ? "flex flex-1 items-center justify-center"
+            : "flex-1 overflow-y-auto px-4 py-5"
+        }
+      >
         {children}
       </main>
-      <footer className="border-t border-pine/15 bg-paper/70">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-pine sm:flex-row sm:justify-between">
-          <p>
-            LINK is a Community Interest Company concept for Lincolnshire. This
-            MVP uses a verified demo directory — recommendations never invent
-            services.
-          </p>
-          <p>
-            Samaritans: 116 123 · NHS: 111 · Adult care information remains with
-            Lincolnshire County Council.
-          </p>
-        </div>
-      </footer>
+      {showChrome ? (
+        <nav
+          className="shrink-0 border-t border-line/10 bg-paper"
+          aria-label="Main"
+        >
+          <ul className="grid grid-cols-5">
+            {TABS.map((tab) => {
+              const active = tabActive(pathname, tab.href);
+              return (
+                <li key={tab.href}>
+                  <Link
+                    href={tab.href}
+                    className={`flex min-h-target flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
+                      active ? "text-brand" : "text-muted"
+                    }`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <TabIcon name={tab.label} />
+                    {tab.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null}
     </div>
   );
 }
 
-function navClass(pathname: string, href: string) {
-  const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-  return active ? "text-clay" : "text-pine hover:text-clay";
+function TabIcon({ name }: { name: string }) {
+  const common = "h-5 w-5";
+  if (name === "Home") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+  if (name === "Pathways") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M7 4v16M17 4v16M7 8h10M7 16h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "Messages") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 6h14v9H8l-3 3V6Z" stroke="currentColor" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+  if (name === "Bookings") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M5.5 19c1.4-3 3.6-4.5 6.5-4.5s5.1 1.5 6.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
 }

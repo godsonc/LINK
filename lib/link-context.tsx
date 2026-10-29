@@ -33,7 +33,9 @@ type LinkContextValue = {
   session: SessionState;
   board: BoardState;
   setStory: (story: string, locality: LocalityId) => void;
+  findPathway: (story: string, locality: LocalityId) => boolean;
   answerQuestion: (id: string, value: string) => void;
+  answerQuestions: (values: Record<string, string>) => void;
   toggleNeed: (id: NeedId) => void;
   confirmNeeds: () => void;
   acknowledgeSafeguarding: () => void;
@@ -92,6 +94,7 @@ export function LinkProvider({ children }: { children: React.ReactNode }) {
         const classified = classifyStory(story);
         persistSession({
           ...emptySession(),
+          answers: session.answers,
           story,
           locality,
           classified: classified.needs,
@@ -103,10 +106,48 @@ export function LinkProvider({ children }: { children: React.ReactNode }) {
           logEvent(board, "needs_discovery", "Resident described their situation."),
         );
       },
+      findPathway(story, locality) {
+        const classified = classifyStory(story);
+        const selected = classified.needs.map((need) => need.id);
+        const needs = refineNeeds(selected, session.answers);
+        const matches = rankServices({
+          needs,
+          locality,
+          answers: session.answers,
+          overrides: board.serviceOverrides,
+        });
+        const pathway = buildPathway(needs, matches);
+        persistSession({
+          ...session,
+          story,
+          locality,
+          classified: classified.needs,
+          selectedNeeds: needs,
+          matches,
+          pathway,
+          nextSteps: buildNextSteps(pathway, matches),
+          safeguarding: classified.safeguarding,
+          safeguardingAcknowledged: session.safeguardingAcknowledged,
+        });
+        persistBoard(
+          logEvent(
+            board,
+            "pathway_created",
+            `Pathway created with ${needs.length} need area(s).`,
+          ),
+        );
+        return classified.safeguarding && !session.safeguardingAcknowledged;
+      },
       answerQuestion(id, value) {
         persistSession({
           ...session,
           answers: { ...session.answers, [id]: value },
+        });
+      },
+      answerQuestions(values) {
+        persistSession({
+          ...session,
+          answers: { ...session.answers, ...values },
         });
       },
       toggleNeed(id) {

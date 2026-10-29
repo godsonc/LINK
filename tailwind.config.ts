@@ -9,22 +9,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#1c2b2a",
-        pine: "#1f4d4a",
-        moss: "#3d6b57",
-        sand: "#f4efe4",
-        paper: "#fffdf8",
-        clay: "#c46a3a",
-        wheat: "#e7d3a1",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        paper: "rgb(var(--paper) / <alpha-value>)",
+        canvas: "rgb(var(--canvas) / <alpha-value>)",
+        field: "rgb(var(--field) / <alpha-value>)",
+        line: "rgb(var(--line) / <alpha-value>)",
+        brand: "rgb(var(--brand) / <alpha-value>)",
+        danger: "rgb(var(--danger) / <alpha-value>)",
+        success: "rgb(var(--success) / <alpha-value>)",
+        warning: "rgb(var(--warning) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui"],
       },
       boxShadow: {
-        card: "0 12px 40px rgba(28, 43, 42, 0.08)",
+        card: "0 16px 40px rgb(var(--ink) / 0.08)",
+      },
+      minHeight: {
+        target: "2.75rem",
+      },
+      borderRadius: {
+        card: "1.5rem",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

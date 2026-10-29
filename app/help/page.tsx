@@ -3,63 +3,88 @@
 import { useState } from "react";
 import { useLink } from "@/lib/link-context";
 
+const OPTIONS = [
+  {
+    title: "A navigator calls me",
+    detail: "Someone from LINK talks it through with you.",
+  },
+  {
+    title: "Help with a form or application",
+    detail: "Support to fill something in or make a referral.",
+  },
+  {
+    title: "Come with me to an appointment",
+    detail: "A person attends with you if that would help.",
+  },
+];
+
 export default function HelpPage() {
   const { session, requestNavigator } = useLink();
-  const [reason, setReason] = useState("I would like a person to help me take the next step.");
+  const [choice, setChoice] = useState(OPTIONS[0].title);
   const [contact, setContact] = useState("");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-clay">
-          Human when necessary
+    <div className="space-y-5">
+      <div>
+        <p className="text-muted">
+          If the next step is hard to do alone, a Community Navigator can help.
         </p>
-        <h1 className="mt-2 text-4xl font-semibold">Need someone to help?</h1>
-        <p className="mt-3 text-lg text-pine">
-          Community Navigators can review your situation, contact organisations,
-          support applications, and find another pathway if the first one fails.
-        </p>
-      </header>
+      </div>
       {session.navigatorCase ? (
-        <section className="rounded-3xl bg-moss/15 p-6">
-          <h2 className="text-2xl font-semibold">A navigator has been asked</h2>
-          <p className="mt-2">
-            Case {session.navigatorCase.id} is {session.navigatorCase.status.replace("_", " ")}.
-            In this MVP the request appears on the admin board so a navigator can
-            pick it up.
+        <section className="rounded-card bg-success/15 p-4">
+          <h3 className="font-semibold">A navigator has been asked</h3>
+          <p className="mt-1 text-sm">
+            Case {session.navigatorCase.id} is{" "}
+            {session.navigatorCase.status.replace("_", " ")}.
           </p>
         </section>
       ) : (
         <form
-          className="rounded-3xl bg-paper p-6 shadow-card"
+          className="space-y-3"
           onSubmit={(event) => {
             event.preventDefault();
-            requestNavigator({ reason, preferredContact: contact });
+            requestNavigator({
+              reason: choice,
+              preferredContact: contact,
+            });
           }}
         >
-          <label className="block font-medium">
-            Why would a person help more than the website just now?
-            <textarea
-              className="mt-2 w-full rounded-2xl border border-pine/15 bg-sand p-4"
-              rows={5}
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
-            />
-          </label>
-          <label className="mt-4 block font-medium">
-            How should we contact you?
+          {OPTIONS.map((option) => {
+            const selected = choice === option.title;
+            return (
+              <button
+                key={option.title}
+                type="button"
+                className={`w-full rounded-card border px-4 py-4 text-left ${
+                  selected
+                    ? "border-brand bg-brand/10"
+                    : "border-line/15 bg-paper"
+                }`}
+                onClick={() => setChoice(option.title)}
+                aria-pressed={selected}
+              >
+                <span className="block font-semibold">{option.title}</span>
+                <span className="mt-1 block text-sm text-muted">
+                  {option.detail}
+                </span>
+              </button>
+            );
+          })}
+          <label className="block text-sm font-medium">
+            How should we reach you?
             <input
-              className="mt-2 w-full rounded-full border border-pine/15 bg-sand px-4 py-2"
+              className="mt-2 min-h-target w-full rounded-2xl border border-line/20 bg-field px-4"
               value={contact}
               onChange={(event) => setContact(event.target.value)}
+              placeholder="Phone number or email"
               required
             />
           </label>
           <button
-            className="mt-5 rounded-full bg-pine px-5 py-3 font-medium text-sand"
             type="submit"
+            className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper"
           >
-            Connect with a Community Navigator
+            Request help
           </button>
         </form>
       )}
