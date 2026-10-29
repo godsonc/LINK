@@ -13,7 +13,7 @@ export default function HomePage() {
         We help you find local support, services and opportunities.
       </p>
       <Link
-        href="/discover"
+        href="/who"
         className="mt-8 flex min-h-target w-full items-center justify-center rounded-full bg-brand px-6 font-medium text-paper"
       >
         Get started

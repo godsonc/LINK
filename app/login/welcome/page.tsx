@@ -11,7 +11,7 @@ export default function WelcomePage() {
       subtitle="Let’s personalise your experience."
     >
       <div className="space-y-3">
-        <PrimaryButton type="button" onClick={() => router.push("/discover")}>
+        <PrimaryButton type="button" onClick={() => router.push("/who")}>
           Tell us about you
         </PrimaryButton>
         <SecondaryButton onClick={() => router.push("/")}>

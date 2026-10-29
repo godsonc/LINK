@@ -3,29 +3,52 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 
+const LINKS = [
+  { href: "/settings", label: "Settings" },
+  { href: "/saved", label: "Saved items" },
+  { href: "/feedback", label: "Feedback" },
+  { href: "/bookings", label: "Appointments" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/admin", label: "Navigator board" },
+];
+
 export default function ProfilePage() {
   const { ready, user } = useAuth();
   const name = user?.fullName?.trim() || "Your profile";
-  const letter = name.charAt(0).toUpperCase();
+  const letter = (user?.fullName || user?.email || "?").charAt(0).toUpperCase();
 
   return (
-    <article className="mx-auto max-w-3xl rounded-3xl bg-paper p-8 shadow-card">
+    <div className="space-y-5">
       <div className="flex items-center gap-4">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand text-2xl font-semibold text-paper">
           {user ? letter : "?"}
         </span>
         <div>
-          <h1 className="text-4xl font-semibold">{ready ? name : "Profile"}</h1>
-          <p className="mt-1 text-muted">{user?.email ?? "Sign in to see your account."}</p>
+          <h2 className="text-2xl font-semibold">
+            {ready && user ? name : "Guest"}
+          </h2>
+          <p className="text-sm text-muted">
+            {user?.email ?? "You can use LINK without an account."}
+          </p>
         </div>
       </div>
+      <ul className="overflow-hidden rounded-card bg-paper shadow-card">
+        {LINKS.map((item) => (
+          <li key={item.href} className="border-b border-line/10 last:border-b-0">
+            <Link href={item.href} className="flex min-h-target items-center px-4 font-medium">
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
       {ready && !user ? (
-        <p className="mt-6">
-          <Link href="/login" className="font-medium text-muted underline">
-            Sign in
-          </Link>
-        </p>
+        <Link
+          href="/login"
+          className="inline-flex min-h-target items-center rounded-full bg-brand px-5 font-semibold text-paper"
+        >
+          Sign in
+        </Link>
       ) : null}
-    </article>
+    </div>
   );
 }

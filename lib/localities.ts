@@ -37,3 +37,27 @@ export const LOCALITIES: {
 export function localityById(id: LocalityId) {
   return LOCALITIES.find((item) => item.id === id) ?? LOCALITIES[0];
 }
+
+const POSTCODE_PREFIXES: [string, LocalityId][] = [
+  ["PE21", "boston"],
+  ["PE22", "boston"],
+  ["PE25", "skegness"],
+  ["LN12", "mablethorpe"],
+  ["LN11", "louth"],
+  ["LN9", "horncastle"],
+  ["LN6", "lincoln"],
+  ["LN5", "lincoln"],
+  ["LN2", "lincoln"],
+  ["LN1", "lincoln"],
+  ["DN21", "gainsborough"],
+  ["PE12", "spalding"],
+  ["PE11", "spalding"],
+  ["NG34", "sleaford"],
+  ["NG31", "grantham"],
+];
+
+export function localityFromPostcode(postcode: string): LocalityId | null {
+  const compact = postcode.replace(/\s+/g, "").toUpperCase();
+  const match = POSTCODE_PREFIXES.find(([prefix]) => compact.startsWith(prefix));
+  return match?.[1] ?? null;
+}

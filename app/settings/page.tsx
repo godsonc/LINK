@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useDisplayPrefs } from "@/lib/display-prefs";
 
 export default function SettingsPage() {
@@ -7,29 +8,45 @@ export default function SettingsPage() {
     useDisplayPrefs();
 
   return (
-    <article className="mx-auto max-w-3xl space-y-6 rounded-3xl bg-paper p-8 shadow-card">
-      <header>
-        <h1 className="text-4xl font-semibold">Settings</h1>
-        <p className="mt-2 text-muted">
-          Choose how LINK looks on this device.
-        </p>
-      </header>
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          className="min-h-11 rounded-full border border-line/30 px-4 py-2 font-medium"
-          onClick={toggleTextSize}
-        >
-          {textSize === "112%" ? "Larger text" : "Standard text"}
-        </button>
-        <button
-          type="button"
-          className="min-h-11 rounded-full border border-line/30 px-4 py-2 font-medium"
-          onClick={toggleContrast}
-        >
-          {contrast ? "Standard contrast" : "High contrast"}
-        </button>
-      </div>
-    </article>
+    <div className="space-y-4">
+      <p className="text-muted">How LINK looks on this device.</p>
+      <ul className="overflow-hidden rounded-card bg-paper shadow-card">
+        <li className="border-b border-line/10">
+          <button
+            type="button"
+            className="flex min-h-target w-full items-center justify-between px-4 text-left"
+            onClick={toggleTextSize}
+          >
+            <span className="font-medium">Text size</span>
+            <span className="text-sm text-muted">
+              {textSize === "112%" ? "Larger" : "Standard"}
+            </span>
+          </button>
+        </li>
+        <li className="border-b border-line/10">
+          <button
+            type="button"
+            className="flex min-h-target w-full items-center justify-between px-4 text-left"
+            onClick={toggleContrast}
+          >
+            <span className="font-medium">Contrast</span>
+            <span className="text-sm text-muted">
+              {contrast ? "High" : "Standard"}
+            </span>
+          </button>
+        </li>
+        <li className="border-b border-line/10">
+          <div className="flex min-h-target items-center justify-between px-4">
+            <span className="font-medium">Language</span>
+            <span className="text-sm text-muted">English</span>
+          </div>
+        </li>
+        <li>
+          <Link href="/privacy" className="flex min-h-target items-center px-4 font-medium">
+            Privacy
+          </Link>
+        </li>
+      </ul>
+    </div>
   );
 }
