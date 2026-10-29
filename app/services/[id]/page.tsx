@@ -49,6 +49,12 @@ export default function ServicePage() {
         <h2 className="text-2xl font-semibold">How to access this</h2>
         <p className="mt-2 leading-relaxed">{live.howToAccess}</p>
         <p className="mt-3 font-medium">Next action: {live.nextAction}</p>
+        <Link
+          href={`/bookings/new?service=${live.id}`}
+          className="mt-4 inline-flex min-h-target items-center rounded-full bg-brand px-4 text-sm font-semibold text-paper"
+        >
+          Book appointment
+        </Link>
         {live.documents.length > 0 ? (
           <div className="mt-4">
             <h3 className="font-medium">If you have them, useful documents</h3>

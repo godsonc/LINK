@@ -18,6 +18,8 @@ function titleFor(pathname: string) {
   if (pathname.startsWith("/services/")) return "Opportunity";
   if (pathname.startsWith("/pathway")) return "Your pathway";
   if (pathname.startsWith("/messages")) return "Messages";
+  if (pathname.startsWith("/bookings/new")) return "Book appointment";
+  if (pathname.startsWith("/bookings/")) return "Appointment";
   if (pathname.startsWith("/bookings")) return "Bookings";
   if (pathname.startsWith("/profile")) return "Profile";
   if (pathname.startsWith("/settings")) return "Settings";

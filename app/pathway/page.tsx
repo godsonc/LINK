@@ -42,12 +42,20 @@ export default function PathwayPage() {
               </p>
               <h3 className="mt-1 text-lg font-semibold">{service.name}</h3>
               <p className="mt-1 text-sm text-muted">{service.summary}</p>
-              <Link
-                href={`/services/${service.id}`}
-                className="mt-4 inline-flex min-h-11 items-center rounded-full bg-brand px-4 text-sm font-semibold text-paper"
-              >
-                Start this step
-              </Link>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href={`/bookings/new?service=${service.id}`}
+                  className="inline-flex min-h-11 items-center rounded-full bg-brand px-4 text-sm font-semibold text-paper"
+                >
+                  Book appointment
+                </Link>
+                <Link
+                  href={`/services/${service.id}`}
+                  className="inline-flex min-h-11 items-center rounded-full border border-line/30 px-4 text-sm font-semibold"
+                >
+                  View this step
+                </Link>
+              </div>
             </li>
           );
         })}
