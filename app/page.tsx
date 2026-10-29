@@ -1,93 +1,49 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useLink } from "@/lib/link-context";
-
-const EXAMPLES = [
-  "I can't afford my bills.",
-  "I look after my mother and I'm exhausted.",
-  "I left college and don't know what to do.",
-  "I've lost my job and I'm struggling to pay rent.",
-  "I'm looking after my husband, I've reduced my working hours and we're struggling to pay our bills.",
-];
 
 export default function HomePage() {
-  const router = useRouter();
-  const { setStory, session } = useLink();
-
   return (
-    <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-      <section className="rounded-3xl bg-paper p-8 shadow-card">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
-          Lincolnshire pilot
-        </p>
-        <h1 className="mt-3 max-w-xl text-4xl font-semibold leading-tight tracking-tight">
-          Tell us what is happening. We will help you find the next best step.
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-          You do not need to know which organisation, form or phone number to
-          start with. LINK turns a situation into a local pathway — with a
-          person available if technology is not enough.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href="/discover"
-            className="rounded-full bg-brand px-6 py-3 font-medium text-paper"
-          >
-            Describe your situation
-          </Link>
-          <Link
-            href="/help"
-            className="rounded-full border border-line/30 px-6 py-3 font-medium"
-          >
-            Speak to a Community Navigator
-          </Link>
-          <Link
-            href="/login"
-            className="rounded-full border border-line/30 px-6 py-3 font-medium"
-          >
-            Sign in / create account
-          </Link>
-        </div>
-        <div className="mt-10">
-          <p className="text-sm font-medium text-muted">Try an example</p>
-          <div className="mt-3 flex flex-col gap-2">
-            {EXAMPLES.map((example) => (
-              <button
-                key={example}
-                type="button"
-                className="rounded-2xl border border-line/15 bg-field px-4 py-3 text-left hover:border-brand"
-                onClick={() => {
-                  setStory(example, session.locality);
-                  router.push("/discover");
-                }}
-              >
-                “{example}”
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-      <aside className="space-y-4">
-        <div className="rounded-3xl bg-brand p-6 text-paper">
-          <h2 className="text-xl font-semibold">Need → Opportunity</h2>
-          <ol className="mt-4 space-y-3 text-paper/90">
-            <li>1. Describe what is happening in ordinary language.</li>
-            <li>2. Confirm the areas we think you may need help with.</li>
-            <li>3. Receive a ranked local pathway, not a directory dump.</li>
-            <li>4. Take one next step — or ask a navigator to do it with you.</li>
-          </ol>
-        </div>
-        <div className="rounded-3xl border border-line/15 bg-paper p-6">
-          <h2 className="text-xl font-semibold">This MVP proves</h2>
-          <p className="mt-2 leading-relaxed">
-            Can technology reduce the friction between a stated need and an
-            appropriate local service? Recommendations only come from a verified
-            demo catalogue. AI does not invent organisations.
-          </p>
-        </div>
-      </aside>
+    <div className="mx-auto flex w-full max-w-sm flex-col items-center px-6 py-8 text-center">
+      <LinkMark />
+      <p className="mt-6 text-sm font-medium text-muted">
+        Lincolnshire Inclusion &amp; Navigation Network
+      </p>
+      <h1 className="mt-6 text-5xl font-semibold tracking-tight">LINK</h1>
+      <p className="mt-2 text-lg text-ink">From need to opportunity.</p>
+      <p className="mt-3 max-w-xs leading-relaxed text-muted">
+        We help you find local support, services and opportunities.
+      </p>
+      <Link
+        href="/discover"
+        className="mt-8 flex min-h-target w-full items-center justify-center rounded-full bg-brand px-6 font-medium text-paper"
+      >
+        Get started
+      </Link>
+      <Link
+        href="/login/sign-in"
+        className="mt-5 min-h-target px-4 py-3 font-medium text-muted"
+      >
+        I already have an account
+      </Link>
     </div>
+  );
+}
+
+function LinkMark() {
+  return (
+    <svg viewBox="0 0 120 120" className="h-28 w-28" aria-hidden>
+      <circle cx="28" cy="78" r="10" fill="#2F6FED" />
+      <circle cx="46" cy="42" r="9" fill="#16A34A" />
+      <circle cx="72" cy="28" r="11" fill="#5B2A86" />
+      <circle cx="92" cy="58" r="8" fill="#E07A2F" />
+      <circle cx="78" cy="88" r="9" fill="#DB2777" />
+      <path
+        d="M28 78 L46 42 L72 28 L92 58 L78 88 L46 42"
+        fill="none"
+        stroke="#5B2A86"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

@@ -13,12 +13,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     useDisplayPrefs();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
+  const isHome = pathname === "/";
 
   return (
     <div className="min-h-screen text-ink">
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+      {isHome ? null : (
       <header className="border-b border-line/20 bg-paper/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
           <Link href="/" className="flex items-center gap-3">
@@ -89,7 +91,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      {isAuthRoute ? null : (
+      )}
+      {isAuthRoute || isHome ? null : (
         <div className="bg-danger text-paper">
           <p className="mx-auto max-w-6xl px-4 py-2 text-sm">
             If you or someone else is in immediate danger, call 999. LINK is not an
@@ -97,9 +100,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       )}
-      <main id="main" className="mx-auto max-w-6xl px-4 py-10">
+      <main
+        id="main"
+        className={
+          isHome
+            ? "flex min-h-screen items-center justify-center"
+            : "mx-auto max-w-6xl px-4 py-10"
+        }
+      >
         {children}
       </main>
+      {isHome ? null : (
       <footer className="border-t border-line/20 bg-paper/70">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between">
           <p>
@@ -113,6 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       </footer>
+      )}
     </div>
   );
 }
