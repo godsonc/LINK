@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useAppointments } from "@/components/useAppointments";
+import { useProfile } from "@/components/useProfile";
 import {
   channelLabel,
   downloadCalendar,
@@ -14,13 +15,16 @@ import {
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
   const { ready, items, commit } = useAppointments();
+  const profile = useProfile();
   const [cancelling, setCancelling] = useState(false);
   const appointment = items.find((item) => item.id === params.id);
 
   if (!ready) return <p className="text-muted">Loading your booking…</p>;
   if (!appointment) return <p>We could not find that booking.</p>;
 
-  const reminder = reminderText(appointment);
+  const reminder = profile.consents.reminders
+    ? reminderText(appointment)
+    : null;
 
   function cancel() {
     commit(

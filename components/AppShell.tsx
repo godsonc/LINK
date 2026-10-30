@@ -21,6 +21,13 @@ function titleFor(pathname: string) {
   if (pathname.startsWith("/bookings/new")) return "Book appointment";
   if (pathname.startsWith("/bookings/")) return "Appointment";
   if (pathname.startsWith("/bookings")) return "Bookings";
+  if (pathname.startsWith("/profile/edit")) return "Personal information";
+  if (pathname.startsWith("/profile/preferences")) return "Preferences";
+  if (pathname.startsWith("/profile/activity")) return "Activity";
+  if (pathname.startsWith("/profile/documents")) return "Documents";
+  if (pathname.startsWith("/profile/security")) return "Account & security";
+  if (pathname.startsWith("/profile/privacy")) return "Privacy & consent";
+  if (pathname.startsWith("/profile/help")) return "Help & support";
   if (pathname.startsWith("/profile")) return "Profile";
   if (pathname.startsWith("/settings")) return "Settings";
   if (pathname.startsWith("/who")) return "Who is this for?";

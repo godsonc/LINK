@@ -7,13 +7,17 @@ import {
   reminderText,
 } from "@/lib/appointments";
 import { useAppointments } from "@/components/useAppointments";
+import { useProfile } from "@/components/useProfile";
 
 export default function BookingsPage() {
   const { ready, items } = useAppointments();
+  const profile = useProfile();
   const active = items.filter((item) => item.status !== "cancelled");
-  const reminders = active
-    .map((item) => reminderText(item))
-    .filter((item): item is string => Boolean(item));
+  const reminders = profile.consents.reminders
+    ? active
+        .map((item) => reminderText(item))
+        .filter((item): item is string => Boolean(item))
+    : [];
 
   return (
     <div className="space-y-4">

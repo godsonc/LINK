@@ -9,7 +9,13 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-4">
-      <p className="text-muted">How LINK looks on this device.</p>
+      <p className="text-muted">
+        How LINK looks on this device. Communication and access needs are in{" "}
+        <Link href="/profile/preferences" className="font-medium text-brand">
+          profile preferences
+        </Link>
+        .
+      </p>
       <ul className="overflow-hidden rounded-card bg-paper shadow-card">
         <li className="border-b border-line/10">
           <button
