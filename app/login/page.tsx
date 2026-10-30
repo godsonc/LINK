@@ -9,13 +9,9 @@ import {
   SecondaryButton,
   TextLink,
 } from "@/components/auth/ui";
-import { useAuth } from "@/lib/auth-context";
-
 function GetStarted() {
   const router = useRouter();
   const error = useSearchParams().get("error");
-  const { continueAsGuest } = useAuth();
-
   return (
     <AuthCard
       title="Welcome"
@@ -38,10 +34,7 @@ function GetStarted() {
         <button
           type="button"
           className="min-h-11 w-full py-3 text-sm font-medium text-muted"
-          onClick={() => {
-            continueAsGuest();
-            router.push("/login/guest");
-          }}
+          onClick={() => router.push("/login/guest")}
         >
           Continue as guest
         </button>

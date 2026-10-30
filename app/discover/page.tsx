@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { localityFromPostcode } from "@/lib/localities";
+import { GuestBanner } from "@/components/GuestBanner";
 import { useLink } from "@/lib/link-context";
 import type { LocalityId } from "@/lib/types";
 
@@ -77,6 +78,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="space-y-5">
+      <GuestBanner />
       <div>
         <h2 className="text-2xl font-semibold">How can we help today?</h2>
         <p className="mt-2 text-muted">

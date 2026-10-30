@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { NEED_COPY } from "@/lib/needs";
 import { serviceById } from "@/lib/catalog";
+import { GuestBanner } from "@/components/GuestBanner";
 import { useLink } from "@/lib/link-context";
 
 export default function PathwayPage() {
@@ -11,6 +12,7 @@ export default function PathwayPage() {
   if (!session.pathway.length) {
     return (
       <div className="space-y-4">
+        <GuestBanner />
         <p className="text-muted">
           Tell us what you need and we will suggest local options.
         </p>
@@ -26,6 +28,7 @@ export default function PathwayPage() {
 
   return (
     <div className="space-y-4">
+      <GuestBanner />
       <div>
         <p className="text-muted">
           Start with one step. You can come back to the others.

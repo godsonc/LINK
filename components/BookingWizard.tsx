@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { GuestBanner } from "@/components/GuestBanner";
 import { useAuth } from "@/lib/auth-context";
 import { SERVICES, serviceById } from "@/lib/catalog";
 import { useLink } from "@/lib/link-context";
@@ -47,7 +48,7 @@ type Step =
 export function BookingWizard() {
   const router = useRouter();
   const params = useSearchParams();
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const { session, board } = useLink();
   const { ready, items, commit } = useAppointments();
   const rescheduleId = params.get("reschedule");
@@ -480,6 +481,9 @@ export function BookingWizard() {
           >
             View bookings
           </Link>
+          {isGuest && !user ? (
+            <GuestBanner className="text-left" />
+          ) : null}
         </section>
       ) : null}
     </div>

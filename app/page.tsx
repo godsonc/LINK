@@ -24,6 +24,12 @@ export default function HomePage() {
       >
         I already have an account
       </Link>
+      <Link
+        href="/login/guest"
+        className="min-h-target px-4 py-3 text-sm font-medium text-brand"
+      >
+        Continue as guest
+      </Link>
     </div>
   );
 }

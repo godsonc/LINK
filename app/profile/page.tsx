@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { GuestBanner } from "@/components/GuestBanner";
 import { useAppointments } from "@/components/useAppointments";
 import { useProfile } from "@/components/useProfile";
 import { useAuth } from "@/lib/auth-context";
@@ -50,7 +51,7 @@ const SECTIONS = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { ready: authReady, user, signOut } = useAuth();
+  const { ready: authReady, user, isGuest, clearGuest, signOut } = useAuth();
   const profile = useProfile();
   const { ready: bookingsReady, items } = useAppointments();
   const { ready: linkReady, session } = useLink();
@@ -123,10 +124,11 @@ export default function ProfilePage() {
     );
   }
 
+  const guestOnly = isGuest && !user;
   const name =
     profile.details.fullName.trim() ||
     user?.fullName?.trim() ||
-    "Guest";
+    (guestOnly ? "Guest" : "Your profile");
   const email = profile.details.email.trim() || user?.email || "";
   const phone = profile.details.phone.trim();
   const location =
@@ -141,6 +143,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-5">
+      {guestOnly ? <GuestBanner /> : null}
       <div className="flex items-center gap-4">
         {avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -160,6 +163,11 @@ export default function ProfilePage() {
           {phone ? <p className="text-sm text-muted">{phone}</p> : null}
           {location ? <p className="text-sm text-muted">{location}</p> : null}
           <div className="mt-1 flex flex-wrap gap-2">
+            {guestOnly ? (
+              <span className="rounded-full bg-brand/15 px-2 py-0.5 text-xs font-medium text-brand">
+                Guest · this device
+              </span>
+            ) : null}
             {emailVerified ? (
               <span className="rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
                 Email verified
@@ -242,13 +250,41 @@ export default function ProfilePage() {
         >
           Sign out
         </button>
+      ) : guestOnly ? (
+        <div className="space-y-2">
+          <Link
+            href="/login/sign-up"
+            className="inline-flex min-h-target w-full items-center justify-center rounded-full bg-brand px-4 font-semibold text-paper"
+          >
+            Create account
+          </Link>
+          <button
+            type="button"
+            className="min-h-target w-full rounded-full border border-line/30 font-semibold"
+            onClick={() => {
+              clearGuest();
+              router.push("/login");
+              router.refresh();
+            }}
+          >
+            Leave guest mode
+          </button>
+        </div>
       ) : (
-        <Link
-          href="/login"
-          className="inline-flex min-h-target w-full items-center justify-center rounded-full bg-brand px-4 font-semibold text-paper"
-        >
-          Sign in
-        </Link>
+        <div className="space-y-2">
+          <Link
+            href="/login/sign-up"
+            className="inline-flex min-h-target w-full items-center justify-center rounded-full bg-brand px-4 font-semibold text-paper"
+          >
+            Create account
+          </Link>
+          <Link
+            href="/login/guest"
+            className="inline-flex min-h-target w-full items-center justify-center rounded-full border border-line/30 font-semibold"
+          >
+            Continue as guest
+          </Link>
+        </div>
       )}
       <Link href="/settings" className="block text-center text-sm text-muted">
         Display settings

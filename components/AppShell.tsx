@@ -50,13 +50,13 @@ function tabActive(pathname: string, href: string) {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
   const isHome = pathname === "/";
   const showChrome = !isAuthRoute && !isHome;
   const isTabRoot = TABS.some((tab) => tab.href === pathname);
-  const signedIn = Boolean(user);
+  const showAccountMenu = Boolean(user) || isGuest;
 
   return (
     <div
@@ -88,7 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <h1 className="flex-1 truncate text-center text-base font-semibold">
               {titleFor(pathname)}
             </h1>
-            {signedIn ? <UserMenu /> : <span className="w-11" />}
+            {showAccountMenu ? <UserMenu /> : <span className="w-11" />}
           </div>
         </header>
       ) : null}
