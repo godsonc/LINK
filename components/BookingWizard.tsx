@@ -20,6 +20,7 @@ import {
   slotsFor,
   toIsoDate,
 } from "@/lib/appointments";
+import { appendMessage } from "@/lib/messages";
 import type { NeedId, Service } from "@/lib/types";
 import { useAppointments } from "./useAppointments";
 
@@ -143,29 +144,38 @@ export function BookingWizard() {
         accessNeeds: accessNeeds.trim(),
         status,
       });
+      let savedAppointment = next;
       if (existing) {
-        commit(
-          items.map((item) =>
-            item.id === existing.id
-              ? {
-                  ...next,
-                  id: existing.id,
-                  reference: existing.reference,
-                  createdAt: existing.createdAt,
-                }
-              : item,
-          ),
-        );
-        setSaved({
+        savedAppointment = {
           ...next,
           id: existing.id,
           reference: existing.reference,
           createdAt: existing.createdAt,
-        });
+        };
+        commit(
+          items.map((item) =>
+            item.id === existing.id ? savedAppointment : item,
+          ),
+        );
+        setSaved(savedAppointment);
       } else {
         commit([next, ...items]);
         setSaved(next);
       }
+      appendMessage({
+        from: savedAppointment.serviceName,
+        preview:
+          status === "waitlist"
+            ? "You joined the waitlist for this service."
+            : `Appointment booked for ${formatLongDate(savedAppointment.date)}${
+                savedAppointment.time ? ` at ${savedAppointment.time}` : ""
+              }.`,
+        body: `Reference ${savedAppointment.reference}. ${savedAppointment.place}. ${
+          status === "waitlist"
+            ? "We will contact you when a slot opens."
+            : "Bring any documents listed on your pathway step."
+        }`,
+      });
       setStep("done");
     } catch {
       setStep("error");

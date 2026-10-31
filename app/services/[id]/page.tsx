@@ -26,54 +26,56 @@ export default function ServicePage() {
   const match = session.matches.find((item) => item.serviceId === live.id);
 
   return (
-    <article className="mx-auto max-w-3xl space-y-6">
-      <Link href="/pathway" className="text-sm text-brand">
-        Back to pathway
-      </Link>
-      <header className="rounded-3xl bg-paper p-8 shadow-card">
+    <article className="space-y-4">
+      <header className="rounded-card bg-paper p-5 shadow-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-4xl font-semibold">{live.name}</h1>
-            <p className="mt-1 text-muted">{live.organisation}</p>
+            <h2 className="text-2xl font-semibold">{live.name}</h2>
+            <p className="mt-1 text-sm text-muted">{live.organisation}</p>
           </div>
           <CapacityBadge capacity={live.capacity} />
         </div>
-        <p className="mt-4 text-lg leading-relaxed">{live.summary}</p>
-        <p className="mt-3 text-sm text-muted">
-          {place.name} · {live.district} · last verified {live.lastVerified} ·{" "}
-          {live.verification}
+        <p className="mt-3 leading-relaxed">{live.summary}</p>
+        <p className="mt-2 text-sm text-muted">
+          {place.name} · {live.district} · verified {live.lastVerified}
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href={`/bookings/new?service=${live.id}`}
+            className="inline-flex min-h-11 items-center rounded-full bg-brand px-4 text-sm font-semibold text-paper"
+          >
+            Book appointment
+          </Link>
+          <Link
+            href="/help"
+            className="inline-flex min-h-11 items-center rounded-full border border-line/30 px-4 text-sm font-semibold"
+          >
+            Ask for help
+          </Link>
+        </div>
       </header>
 
-      <section className="rounded-3xl border border-line/15 bg-paper p-6">
-        <h2 className="text-2xl font-semibold">How to access this</h2>
-        <p className="mt-2 leading-relaxed">{live.howToAccess}</p>
-        <p className="mt-3 font-medium">Next action: {live.nextAction}</p>
-        <Link
-          href={`/bookings/new?service=${live.id}`}
-          className="mt-4 inline-flex min-h-target items-center rounded-full bg-brand px-4 text-sm font-semibold text-paper"
-        >
-          Book appointment
-        </Link>
+      <section className="rounded-card bg-paper p-5 shadow-card">
+        <h3 className="font-semibold">How to access this</h3>
+        <p className="mt-2 text-sm leading-relaxed">{live.howToAccess}</p>
+        <p className="mt-3 text-sm font-medium">Next: {live.nextAction}</p>
         {live.documents.length > 0 ? (
-          <div className="mt-4">
-            <h3 className="font-medium">If you have them, useful documents</h3>
-            <ul className="mt-2 list-disc pl-5">
-              {live.documents.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted">
+            {live.documents.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         ) : null}
-        <p className="mt-4 text-sm text-muted">{live.eligibilityNotes}</p>
-        {match ? <p className="mt-3 text-sm">{match.eligibilityPhrase}</p> : null}
-        <div className="mt-4 space-y-1 text-sm">
+        {match ? (
+          <p className="mt-3 text-sm">{match.eligibilityPhrase}</p>
+        ) : null}
+        <div className="mt-3 space-y-1 text-sm text-muted">
           {live.phone ? <p>Phone: {live.phone}</p> : null}
           {live.email ? <p>Email: {live.email}</p> : null}
           {live.website ? (
             <p>
               Website:{" "}
-              <a className="underline" href={live.website}>
+              <a className="text-brand underline" href={live.website}>
                 {live.website}
               </a>
             </p>
@@ -81,19 +83,18 @@ export default function ServicePage() {
         </div>
       </section>
 
-      <section className="rounded-3xl bg-paper p-6 shadow-card">
-        <h2 className="text-2xl font-semibold">Ask LINK to help you take this step</h2>
-        <p className="mt-2 text-muted">
-          Where we cannot book directly, we can send a referral request for a
-          navigator or the provider to follow up.
+      <section className="rounded-card bg-paper p-5 shadow-card">
+        <h3 className="font-semibold">Request a referral</h3>
+        <p className="mt-2 text-sm text-muted">
+          LINK can pass your details to a navigator or the provider to follow up.
         </p>
         {sent ? (
-          <p className="mt-4 font-medium">
-            Referral requested. A navigator can see this on the admin board.
+          <p className="mt-4 text-sm font-medium">
+            Referral requested. Check Messages for confirmation on this device.
           </p>
         ) : (
           <form
-            className="mt-4 grid gap-3"
+            className="mt-4 space-y-3"
             onSubmit={(event) => {
               event.preventDefault();
               requestReferral({
@@ -104,26 +105,26 @@ export default function ServicePage() {
               setSent(true);
             }}
           >
-            <label>
-              Name, if you are happy to share it
+            <label className="block text-sm font-medium">
+              Name
               <input
-                className="mt-1 w-full rounded-full border border-line/20 bg-field px-4 py-2"
+                className="mt-2 min-h-target w-full rounded-2xl border border-line/20 bg-field px-4"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 required
               />
             </label>
-            <label>
+            <label className="block text-sm font-medium">
               Phone or email
               <input
-                className="mt-1 w-full rounded-full border border-line/20 bg-field px-4 py-2"
+                className="mt-2 min-h-target w-full rounded-2xl border border-line/20 bg-field px-4"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 required
               />
             </label>
             <button
-              className="rounded-full bg-brand px-5 py-3 font-medium text-paper"
+              className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper disabled:opacity-50"
               type="submit"
               disabled={!live.acceptingReferrals || live.capacity === "full"}
             >

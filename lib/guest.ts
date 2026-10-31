@@ -22,6 +22,6 @@ export const GUEST_BENEFITS = [
 
 export const GUEST_LIMITS = [
   "Nothing is synced to other phones or browsers",
-  "Messages stay as samples until you sign in",
+  "Messages from bookings and navigator requests stay on this device only",
   "Create an account to keep your name on your profile",
 ] as const;

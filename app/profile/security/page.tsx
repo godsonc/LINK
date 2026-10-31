@@ -44,6 +44,7 @@ export default function SecurityPage() {
 
   async function deleteLocalAccount() {
     window.localStorage.removeItem("link-appointments");
+    window.localStorage.removeItem("link-messages");
     window.localStorage.removeItem("link-session");
     window.localStorage.removeItem("link-guest");
     clearProfile();

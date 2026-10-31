@@ -66,6 +66,9 @@ export default function PathwayPage() {
       <Link href="/help" className="block text-center text-sm font-medium text-brand">
         I need a person to help me
       </Link>
+      <Link href="/follow-up" className="block text-center text-sm text-muted">
+        Did you get the help you needed?
+      </Link>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GuestBanner } from "@/components/GuestBanner";
 import { useAppointments } from "@/components/useAppointments";
+import { useMessages } from "@/components/useMessages";
 import { useProfile } from "@/components/useProfile";
 import { useAuth } from "@/lib/auth-context";
 import { buildActivityFeed } from "@/lib/activity-feed";
@@ -54,11 +55,13 @@ export default function ProfilePage() {
   const { ready: authReady, user, isGuest, clearGuest, signOut } = useAuth();
   const profile = useProfile();
   const { ready: bookingsReady, items } = useAppointments();
+  const { ready: messagesReady, items: messages } = useMessages();
   const { ready: linkReady, session } = useLink();
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [emailVerified, setEmailVerified] = useState(false);
   const seeded = useRef(false);
-  const ready = authReady && profile.ready && bookingsReady && linkReady;
+  const ready =
+    authReady && profile.ready && bookingsReady && messagesReady && linkReady;
 
   useEffect(() => {
     if (!user || !profile.ready || seeded.current) return;
@@ -188,7 +191,7 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
         <Stat href="/bookings" value={bookings} label="Bookings" />
-        <Stat href="/messages" value={0} label="Messages" />
+        <Stat href="/messages" value={messages.length} label="Messages" />
         <Stat href="/saved" value={saved} label="Saved" />
         <Stat href="/profile/documents" value={documents} label="Documents" />
       </div>

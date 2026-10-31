@@ -31,9 +31,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 LINK does not replace social workers, statutory assessments, medical diagnosis, legal decisions, benefits guarantees, or emergency response. Provider records in this repo are **demo** organisations for product testing, labelled as such.
 
+## Guest access
+
+From the welcome screen or `/login`, choose **Continue as guest** to use LINK without signing in. Pathway, bookings, profile, documents and messages stay on this device until you create an account. Sign up prefills name and email from your local profile when available.
+
 ## Data
 
-Auth uses Supabase. Guest session and admin board still use `localStorage` so you can demonstrate the loop on one machine without accounts. Production would persist pathways, referrals and cases in PostgreSQL with proper retention.
+Auth uses Supabase. Guest mode, pathways, bookings, messages, profile and the admin board use `localStorage` on this device for the MVP demo. Production would persist these in PostgreSQL with proper retention.
 
 ## Supabase
 

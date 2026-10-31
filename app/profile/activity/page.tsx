@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAppointments } from "@/components/useAppointments";
+import { useMessages } from "@/components/useMessages";
 import { useProfile } from "@/components/useProfile";
 import { buildActivityFeed } from "@/lib/activity-feed";
 import { useLink } from "@/lib/link-context";
@@ -9,6 +10,7 @@ import { useLink } from "@/lib/link-context";
 export default function ActivityPage() {
   const profile = useProfile();
   const { ready, items } = useAppointments();
+  const { ready: messagesReady, items: messages } = useMessages();
   const { session } = useLink();
   const bookings = items.filter((item) => item.status !== "cancelled");
   const saved = session.pathway.length;
@@ -17,7 +19,7 @@ export default function ActivityPage() {
     documents: profile.documents,
   });
 
-  if (!profile.ready || !ready) {
+  if (!profile.ready || !ready || !messagesReady) {
     return <p className="text-muted">Loading your profile…</p>;
   }
 
@@ -26,7 +28,7 @@ export default function ActivityPage() {
       <p className="text-muted">Bookings, messages and saved opportunities on this device.</p>
       <ul className="overflow-hidden rounded-card bg-paper shadow-card">
         <Row href="/bookings" label="Bookings" value={String(bookings.length)} />
-        <Row href="/messages" label="Messages" value="0" />
+        <Row href="/messages" label="Messages" value={String(messages.length)} />
         <Row href="/saved" label="Saved opportunities" value={String(saved)} />
         <Row
           href="/profile/documents"
