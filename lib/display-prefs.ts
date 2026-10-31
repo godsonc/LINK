@@ -62,5 +62,19 @@ export function useDisplayPrefs() {
     window.dispatchEvent(new Event(CHANGE_EVENT));
   }
 
-  return { textSize, contrast, toggleTextSize, toggleContrast };
+  function setLargeText(on: boolean) {
+    const next = on ? "128%" : "112%";
+    window.localStorage.setItem(TEXT_KEY, next);
+    setTextSize(next);
+    applyPrefs(next, contrast);
+    window.dispatchEvent(new Event(CHANGE_EVENT));
+  }
+
+  return {
+    textSize,
+    contrast,
+    toggleTextSize,
+    toggleContrast,
+    setLargeText,
+  };
 }

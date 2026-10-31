@@ -17,8 +17,18 @@ const TABS = [
 function titleFor(pathname: string) {
   if (pathname.startsWith("/services/")) return "Opportunity";
   if (pathname.startsWith("/pathway")) return "Your pathway";
+  if (pathname.startsWith("/messages/")) return "Message";
   if (pathname.startsWith("/messages")) return "Messages";
+  if (pathname.startsWith("/bookings/new")) return "Book appointment";
+  if (pathname.startsWith("/bookings/")) return "Appointment";
   if (pathname.startsWith("/bookings")) return "Bookings";
+  if (pathname.startsWith("/profile/edit")) return "Personal information";
+  if (pathname.startsWith("/profile/preferences")) return "Preferences";
+  if (pathname.startsWith("/profile/activity")) return "Activity";
+  if (pathname.startsWith("/profile/documents")) return "Documents";
+  if (pathname.startsWith("/profile/security")) return "Account & security";
+  if (pathname.startsWith("/profile/privacy")) return "Privacy & consent";
+  if (pathname.startsWith("/profile/help")) return "Help & support";
   if (pathname.startsWith("/profile")) return "Profile";
   if (pathname.startsWith("/settings")) return "Settings";
   if (pathname.startsWith("/who")) return "Who is this for?";
@@ -41,13 +51,13 @@ function tabActive(pathname: string, href: string) {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
   const isHome = pathname === "/";
   const showChrome = !isAuthRoute && !isHome;
   const isTabRoot = TABS.some((tab) => tab.href === pathname);
-  const signedIn = Boolean(user);
+  const showAccountMenu = Boolean(user) || isGuest;
 
   return (
     <div
@@ -79,7 +89,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <h1 className="flex-1 truncate text-center text-base font-semibold">
               {titleFor(pathname)}
             </h1>
-            {signedIn ? <UserMenu /> : <span className="w-11" />}
+            {showAccountMenu ? <UserMenu /> : <span className="w-11" />}
           </div>
         </header>
       ) : null}

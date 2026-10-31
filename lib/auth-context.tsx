@@ -8,7 +8,12 @@ import {
   useState,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { GUEST_KEY, type AuthUser } from "@/lib/auth";
+import { type AuthUser } from "@/lib/auth";
+import {
+  GUEST_CHANGE_EVENT,
+  readGuestFlag,
+  writeGuestFlag,
+} from "@/lib/guest";
 
 type AuthContextValue = {
   ready: boolean;
@@ -47,14 +52,20 @@ export function AuthProvider({
 
   useEffect(() => {
     const supabase = createClient();
-    setIsGuest(window.localStorage.getItem(GUEST_KEY) === "1");
+    setIsGuest(readGuestFlag());
+
+    function syncGuest() {
+      setIsGuest(readGuestFlag());
+    }
+    window.addEventListener(GUEST_CHANGE_EVENT, syncGuest);
+    window.addEventListener("storage", syncGuest);
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(fromSessionUser(session?.user ?? null));
       if (session?.user) {
-        window.localStorage.removeItem(GUEST_KEY);
+        writeGuestFlag(false);
         setIsGuest(false);
       }
       setReady(true);
@@ -65,7 +76,11 @@ export function AuthProvider({
       setReady(true);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener(GUEST_CHANGE_EVENT, syncGuest);
+      window.removeEventListener("storage", syncGuest);
+    };
   }, []);
 
   const value = useMemo<AuthContextValue>(
@@ -74,16 +89,18 @@ export function AuthProvider({
       user,
       isGuest,
       continueAsGuest() {
-        window.localStorage.setItem(GUEST_KEY, "1");
+        writeGuestFlag(true);
         setIsGuest(true);
       },
       clearGuest() {
-        window.localStorage.removeItem(GUEST_KEY);
+        writeGuestFlag(false);
         setIsGuest(false);
       },
       async signOut() {
         const supabase = createClient();
         await supabase.auth.signOut();
+        writeGuestFlag(false);
+        setIsGuest(false);
         setUser(null);
       },
     }),

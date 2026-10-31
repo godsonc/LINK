@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { HomeActions } from "@/components/HomeActions";
 
 export default function HomePage() {
   return (
@@ -12,18 +12,7 @@ export default function HomePage() {
       <p className="mt-3 max-w-xs leading-relaxed text-muted">
         We help you find local support, services and opportunities.
       </p>
-      <Link
-        href="/who"
-        className="mt-8 flex min-h-target w-full items-center justify-center rounded-full bg-brand px-6 font-medium text-paper"
-      >
-        Get started
-      </Link>
-      <Link
-        href="/login/sign-in"
-        className="mt-5 min-h-target px-4 py-3 font-medium text-muted"
-      >
-        I already have an account
-      </Link>
+      <HomeActions />
     </div>
   );
 }

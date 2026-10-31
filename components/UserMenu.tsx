@@ -12,12 +12,15 @@ function initial(fullName: string | null, email: string | null) {
 
 export function UserMenu() {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, isGuest, clearGuest, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
-  const letter = initial(user?.fullName ?? null, user?.email ?? null);
-  const label = user?.fullName?.trim() || user?.email || "Account";
+  const guestOnly = isGuest && !user;
+  const letter = guestOnly ? "G" : initial(user?.fullName ?? null, user?.email ?? null);
+  const label = guestOnly
+    ? "Guest"
+    : user?.fullName?.trim() || user?.email || "Account";
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
@@ -34,8 +37,14 @@ export function UserMenu() {
     };
   }, []);
 
-  async function handleLogout() {
+  async function handleLeave() {
     setOpen(false);
+    if (guestOnly) {
+      clearGuest();
+      router.push("/login");
+      router.refresh();
+      return;
+    }
     await signOut();
     router.push("/login");
     router.refresh();
@@ -58,9 +67,11 @@ export function UserMenu() {
         <div
           id={menuId}
           role="menu"
-          className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-line/15 bg-paper py-1 shadow-card"
+          className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-line/15 bg-paper py-1 shadow-card"
         >
-          <p className="truncate px-4 py-2 text-sm text-muted">{label}</p>
+          <p className="truncate px-4 py-2 text-sm text-muted">
+            {guestOnly ? "Guest · this device only" : label}
+          </p>
           <Link
             role="menuitem"
             href="/profile"
@@ -77,13 +88,23 @@ export function UserMenu() {
           >
             Settings
           </Link>
+          {guestOnly ? (
+            <Link
+              role="menuitem"
+              href="/login/sign-up"
+              className="block px-4 py-2.5 text-sm font-medium text-brand hover:bg-field"
+              onClick={() => setOpen(false)}
+            >
+              Create account
+            </Link>
+          ) : null}
           <button
             type="button"
             role="menuitem"
             className="block w-full px-4 py-2.5 text-left text-sm font-medium text-red-700 hover:bg-field"
-            onClick={handleLogout}
+            onClick={handleLeave}
           >
-            Logout
+            {guestOnly ? "Leave guest mode" : "Logout"}
           </button>
         </div>
       ) : null}

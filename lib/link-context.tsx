@@ -11,6 +11,7 @@ import { SERVICES } from "./catalog";
 import { classifyStory } from "./classify";
 import { buildNextSteps, buildPathway, rankServices } from "./match";
 import { refineNeeds } from "./questions";
+import { appendMessage } from "./messages";
 import {
   emptyBoard,
   emptySession,
@@ -207,6 +208,11 @@ export function LinkProvider({ children }: { children: React.ReactNode }) {
             `Referral requested to ${referral.serviceName}.`,
           ),
         );
+        appendMessage({
+          from: referral.serviceName,
+          preview: "We received your referral request.",
+          body: `${contactName}, someone from ${referral.serviceName} may contact you at ${contactPhone}. This stays on this device in the demo.`,
+        });
       },
       requestNavigator({ reason, preferredContact }) {
         const navigatorCase = {
@@ -227,6 +233,11 @@ export function LinkProvider({ children }: { children: React.ReactNode }) {
             "Resident asked for a Community Navigator.",
           ),
         );
+        appendMessage({
+          from: "LINK Navigator",
+          preview: "We received your request for help.",
+          body: `Case ${navigatorCase.id}. A navigator will review: ${reason}. We will reach you at ${preferredContact}.`,
+        });
       },
       saveFollowUp(accessed, notes) {
         persistSession({
