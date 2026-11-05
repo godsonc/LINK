@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useProfile } from "@/components/useProfile";
 import { useDisplayPrefs } from "@/lib/display-prefs";
+import { setProfileFlash } from "@/lib/profile-flash";
 import type { ProfilePreferences } from "@/lib/profile";
 
 export default function PreferencesPage() {
+  const router = useRouter();
   const profile = useProfile();
   const { textSize, setLargeText } = useDisplayPrefs();
-  const [saved, setSaved] = useState(false);
+  const [draft, setDraft] = useState<ProfilePreferences | null>(null);
 
   if (!profile.ready) return <p className="text-muted">Loading your profile…</p>;
   if (profile.error) {
@@ -20,22 +23,26 @@ export default function PreferencesPage() {
     );
   }
 
-  const prefs: ProfilePreferences = {
+  const prefs: ProfilePreferences = draft ?? {
     ...profile.preferences,
     largePrint: textSize === "128%",
   };
 
   function update(next: ProfilePreferences) {
-    setSaved(false);
     if (next.largePrint !== prefs.largePrint) setLargeText(next.largePrint);
-    profile.savePreferences(next);
-    setSaved(true);
+    setDraft(next);
+  }
+
+  function onSave() {
+    profile.savePreferences(prefs);
+    setProfileFlash("Preferences saved.");
+    router.push("/profile");
+    router.refresh();
   }
 
   return (
     <div className="space-y-5">
       <p className="text-muted">How you’d like LINK to contact you, and what helps you take part.</p>
-      {saved ? <p className="text-sm text-success">Saved on this device.</p> : null}
       <fieldset className="space-y-2">
         <legend className="font-semibold">Communication</legend>
         <Check
@@ -95,6 +102,13 @@ export default function PreferencesPage() {
         </Link>
         .
       </p>
+      <button
+        type="button"
+        className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper"
+        onClick={onSave}
+      >
+        Save
+      </button>
     </div>
   );
 }

@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useProfile } from "@/components/useProfile";
+import { setProfileFlash } from "@/lib/profile-flash";
+import type { ProfileConsent } from "@/lib/profile";
 
 export default function ProfilePrivacyPage() {
+  const router = useRouter();
   const profile = useProfile();
-  const [saved, setSaved] = useState(false);
+  const [draft, setDraft] = useState<ProfileConsent | null>(null);
 
   if (!profile.ready) return <p className="text-muted">Loading your profile…</p>;
   if (profile.error) {
@@ -17,25 +21,29 @@ export default function ProfilePrivacyPage() {
     );
   }
 
+  const consents = draft ?? profile.consents;
+
+  function onSave() {
+    profile.saveConsents(consents);
+    setProfileFlash("Privacy choices saved.");
+    router.push("/profile");
+    router.refresh();
+  }
+
   return (
     <div className="space-y-4">
       <p className="text-muted">
         Your information stays on this device unless you sign in, when your name
         is also stored on your account.
       </p>
-      {saved ? <p className="text-sm text-success">Saved on this device.</p> : null}
       <label className="flex min-h-target items-start gap-3 rounded-card bg-paper p-4 shadow-card">
         <input
           type="checkbox"
           className="mt-1"
-          checked={profile.consents.navigator}
-          onChange={(event) => {
-            profile.saveConsents({
-              ...profile.consents,
-              navigator: event.target.checked,
-            });
-            setSaved(true);
-          }}
+          checked={consents.navigator}
+          onChange={(event) =>
+            setDraft({ ...consents, navigator: event.target.checked })
+          }
         />
         <span>
           <span className="block font-medium">A navigator may see my pathway</span>
@@ -48,14 +56,10 @@ export default function ProfilePrivacyPage() {
         <input
           type="checkbox"
           className="mt-1"
-          checked={profile.consents.reminders}
-          onChange={(event) => {
-            profile.saveConsents({
-              ...profile.consents,
-              reminders: event.target.checked,
-            });
-            setSaved(true);
-          }}
+          checked={consents.reminders}
+          onChange={(event) =>
+            setDraft({ ...consents, reminders: event.target.checked })
+          }
         />
         <span>
           <span className="block font-medium">Appointment reminders</span>
@@ -67,6 +71,13 @@ export default function ProfilePrivacyPage() {
       <Link href="/privacy" className="inline-flex font-medium text-brand">
         Read the privacy notice
       </Link>
+      <button
+        type="button"
+        className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper"
+        onClick={onSave}
+      >
+        Save
+      </button>
     </div>
   );
 }
