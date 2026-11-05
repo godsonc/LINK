@@ -42,7 +42,7 @@ export function InactivityLogout() {
       if (loggingOutRef.current) return;
       loggingOutRef.current = true;
       await signOut();
-      router.push("/login");
+      router.push("/");
       router.refresh();
     }
 
