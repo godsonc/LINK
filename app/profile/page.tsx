@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GuestBanner } from "@/components/GuestBanner";
+import { ProfileFlashToast } from "@/components/ProfileFlashToast";
 import { useAppointments } from "@/components/useAppointments";
 import { useMessages } from "@/components/useMessages";
 import { useProfile } from "@/components/useProfile";
@@ -146,6 +147,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-5">
+      <ProfileFlashToast />
       {guestOnly ? <GuestBanner /> : null}
       <div className="flex items-center gap-4">
         {avatar ? (

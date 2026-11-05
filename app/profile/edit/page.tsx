@@ -1,17 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useProfile } from "@/components/useProfile";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
+import { setProfileFlash } from "@/lib/profile-flash";
 import type { ProfileDetails } from "@/lib/profile";
 
 export default function EditProfilePage() {
+  const router = useRouter();
   const { user } = useAuth();
   const profile = useProfile();
   const [draft, setDraft] = useState<ProfileDetails | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
 
   if (!profile.ready) {
     return <p className="text-muted">Loading your profile…</p>;
@@ -27,39 +29,38 @@ export default function EditProfilePage() {
   };
 
   function update(field: keyof ProfileDetails, value: string) {
-    setSaved(false);
-    setNotice("");
     setDraft({ ...form, [field]: value });
   }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    setBusy(true);
     profile.saveDetails(form);
-    setSaved(true);
-    if (!user) {
-      setNotice("Saved on this device.");
-      return;
-    }
-    try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { full_name: form.fullName.trim() },
-      });
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: form.fullName.trim(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
-      if (authError || profileError) {
-        setNotice("Saved on this device. The account name could not be updated.");
-        return;
+    let flash = "Personal information saved.";
+    if (user) {
+      try {
+        const supabase = createClient();
+        const { error: authError } = await supabase.auth.updateUser({
+          data: { full_name: form.fullName.trim() },
+        });
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            full_name: form.fullName.trim(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+        if (authError || profileError) {
+          flash = "Saved on this device. Your account name could not be updated.";
+        }
+      } catch {
+        flash = "Saved on this device. Your account name could not be updated.";
       }
-      setNotice("Saved on this device and on your account.");
-    } catch {
-      setNotice("Saved on this device. The account name could not be updated.");
     }
+    setProfileFlash(flash);
+    setBusy(false);
+    router.push("/profile");
+    router.refresh();
   }
 
   function onPhotoChange(event: ChangeEvent<HTMLInputElement>) {
@@ -98,9 +99,6 @@ export default function EditProfilePage() {
         Name, phone and address help us reach you. Email comes from your sign-in.
         Photos stay on this device only.
       </p>
-      {saved && notice ? (
-        <p className="rounded-card bg-success/15 p-3 text-sm">{notice}</p>
-      ) : null}
       <Field label="Full name" value={form.fullName} onChange={(value) => update("fullName", value)} />
       <Field
         label="Date of birth"
@@ -127,9 +125,10 @@ export default function EditProfilePage() {
       />
       <button
         type="submit"
-        className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper"
+        className="min-h-target w-full rounded-full bg-brand px-4 font-semibold text-paper disabled:opacity-50"
+        disabled={busy}
       >
-        Save
+        {busy ? "Saving…" : "Save"}
       </button>
     </form>
   );

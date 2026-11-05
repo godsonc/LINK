@@ -1,4 +1,5 @@
 export const GUEST_KEY = "link-guest";
+export const POST_SIGNUP_PATH = "/pathway";
 
 export type AuthUser = {
   id: string;
