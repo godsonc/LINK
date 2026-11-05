@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { LinkProvider } from "@/lib/link-context";
 import { AppShell } from "@/components/AppShell";
+import { InactivityLogout } from "@/components/InactivityLogout";
 import { getAuthUser } from "@/lib/supabase/user";
 
 const geistSans = localFont({
@@ -29,6 +30,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} font-sans antialiased`}>
         <AuthProvider initialUser={initialUser}>
+          <InactivityLogout />
           <LinkProvider>
             <AppShell>{children}</AppShell>
           </LinkProvider>
