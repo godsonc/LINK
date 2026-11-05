@@ -16,6 +16,7 @@ import {
   friendlyAuthError,
   getSiteUrl,
   isPasswordValid,
+  POST_SIGNUP_PATH,
 } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 
@@ -58,7 +59,7 @@ export default function SignUpPage() {
       password,
       options: {
         data: { full_name: fullName.trim() },
-        emailRedirectTo: `${getSiteUrl()}/auth/confirm?next=/login/ready`,
+        emailRedirectTo: `${getSiteUrl()}/auth/confirm?next=${encodeURIComponent(POST_SIGNUP_PATH)}`,
       },
     });
     setBusy(false);
@@ -67,7 +68,7 @@ export default function SignUpPage() {
       return;
     }
     if (data.session) {
-      router.push("/login/welcome");
+      router.push(POST_SIGNUP_PATH);
       router.refresh();
       return;
     }

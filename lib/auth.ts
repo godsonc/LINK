@@ -1,4 +1,5 @@
 export const GUEST_KEY = "link-guest";
+export const POST_SIGNUP_PATH = "/discover";
 
 export type AuthUser = {
   id: string;

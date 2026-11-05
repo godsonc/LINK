@@ -7,7 +7,7 @@ import {
   PrimaryButton,
   TextLink,
 } from "@/components/auth/ui";
-import { friendlyAuthError, getSiteUrl } from "@/lib/auth";
+import { friendlyAuthError, getSiteUrl, POST_SIGNUP_PATH } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 
 export default function VerifyEmailPage() {
@@ -33,7 +33,9 @@ export default function VerifyEmailPage() {
     const { error: resendError } = await supabase.auth.resend({
       type: "signup",
       email: stored,
-      options: { emailRedirectTo: `${getSiteUrl()}/auth/confirm?next=/login/ready` },
+      options: {
+        emailRedirectTo: `${getSiteUrl()}/auth/confirm?next=${encodeURIComponent(POST_SIGNUP_PATH)}`,
+      },
     });
     setBusy(false);
     if (resendError) {

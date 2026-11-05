@@ -1,6 +1,7 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { type NextRequest } from "next/server";
+import { POST_SIGNUP_PATH } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 function safeNext(value: string | null, fallback: string) {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = safeNext(
     searchParams.get("next"),
-    type === "recovery" ? "/login/reset" : "/login/ready",
+    type === "recovery" ? "/login/reset" : POST_SIGNUP_PATH,
   );
   const description = searchParams.get("error_description");
 
