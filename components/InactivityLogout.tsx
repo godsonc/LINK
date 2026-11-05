@@ -41,9 +41,8 @@ export function InactivityLogout() {
     async function logoutIdle() {
       if (loggingOutRef.current) return;
       loggingOutRef.current = true;
-      const message = "You were signed out after 10 minutes of inactivity.";
       await signOut();
-      router.push(`/login?error=${encodeURIComponent(message)}`);
+      router.push("/login");
       router.refresh();
     }
 
