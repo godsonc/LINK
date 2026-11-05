@@ -14,6 +14,7 @@ import {
   readGuestFlag,
   writeGuestFlag,
 } from "@/lib/guest";
+import { clearLastActivity, writeLastActivity } from "@/lib/session-idle";
 
 type AuthContextValue = {
   ready: boolean;
@@ -67,6 +68,7 @@ export function AuthProvider({
       if (session?.user) {
         writeGuestFlag(false);
         setIsGuest(false);
+        writeLastActivity();
       }
       setReady(true);
     });
@@ -91,6 +93,7 @@ export function AuthProvider({
       continueAsGuest() {
         writeGuestFlag(true);
         setIsGuest(true);
+        writeLastActivity();
       },
       clearGuest() {
         writeGuestFlag(false);
@@ -101,6 +104,7 @@ export function AuthProvider({
         await supabase.auth.signOut();
         writeGuestFlag(false);
         setIsGuest(false);
+        clearLastActivity();
         setUser(null);
       },
     }),

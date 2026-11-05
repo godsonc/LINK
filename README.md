@@ -50,4 +50,6 @@ In the Supabase dashboard, add these Redirect URLs:
 
 Email sign-up and password reset work with the default Auth settings. Google, Apple and phone SMS need those providers enabling in Authentication → Providers.
 
+Signed-in users and guests are signed out after **10 minutes** without activity (mouse, keyboard, scroll, or touch). Local pathway data stays on the device; you can sign in or continue as guest again.
+
 Optional: run `supabase/ migrations/20261025120000_profiles.sql` in the SQL editor if you want a `profiles` table with row-level security.
