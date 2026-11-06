@@ -12,7 +12,7 @@ export function AuthCard({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-md rounded-[2rem] bg-paper p-7 shadow-card">
+    <div className="mx-auto w-full max-w-md rounded-[2rem] bg-paper p-6 shadow-card sm:p-7 md:max-w-lg">
       <Link href="/login" className="mb-6 flex items-center gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-paper">
           <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden>

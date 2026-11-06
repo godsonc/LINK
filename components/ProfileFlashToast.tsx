@@ -20,7 +20,7 @@ export function ProfileFlashToast() {
     <p
       role="status"
       aria-live="polite"
-      className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md rounded-full bg-ink px-4 py-3 text-center text-sm font-medium text-paper shadow-card"
+      className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md rounded-full bg-ink px-4 py-3 text-center text-sm font-medium text-paper shadow-card sm:inset-x-auto sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:px-6 lg:bottom-8"
     >
       {message}
     </p>
