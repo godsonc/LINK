@@ -2,14 +2,18 @@ import { HomeActions } from "@/components/HomeActions";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-col items-center px-6 py-8 text-center">
+    <div className="mx-auto flex w-full max-w-lg flex-col items-center px-4 py-8 text-center sm:px-6 sm:py-10 md:max-w-xl md:py-12">
       <LinkMark />
       <p className="mt-6 text-sm font-medium text-muted">
         Lincolnshire Inclusion &amp; Navigation Network
       </p>
-      <h1 className="mt-6 text-5xl font-semibold tracking-tight">LINK</h1>
-      <p className="mt-2 text-lg text-ink">From need to opportunity.</p>
-      <p className="mt-3 max-w-xs leading-relaxed text-muted">
+      <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
+        LINK
+      </h1>
+      <p className="mt-2 text-base text-ink sm:text-lg md:text-xl">
+        From need to opportunity.
+      </p>
+      <p className="mt-3 max-w-md leading-relaxed text-muted sm:max-w-lg">
         We help you find local support, services and opportunities.
       </p>
       <HomeActions />

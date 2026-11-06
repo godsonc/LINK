@@ -15,6 +15,7 @@ const TABS = [
 ] as const;
 
 function titleFor(pathname: string) {
+  if (pathname === "/") return "Home";
   if (pathname.startsWith("/services/")) return "Opportunity";
   if (pathname.startsWith("/pathway")) return "Your pathway";
   if (pathname.startsWith("/messages/")) return "Message";
@@ -54,15 +55,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, isGuest } = useAuth();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
-  const isHome = pathname === "/";
-  const showChrome = !isAuthRoute && !isHome;
+  const showChrome = !isAuthRoute;
   const isTabRoot = TABS.some((tab) => tab.href === pathname);
   const showAccountMenu = Boolean(user) || isGuest;
 
   return (
     <div
       className={`flex flex-col bg-canvas text-ink ${
-        showChrome ? "mx-auto h-dvh max-w-md" : "min-h-screen"
+        showChrome
+          ? "mx-auto h-dvh min-h-0 w-full max-w-md lg:max-w-6xl"
+          : "min-h-screen min-w-0"
       }`}
     >
       <a
@@ -72,80 +74,121 @@ export function AppShell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       {showChrome ? (
-        <header className="shrink-0 border-b border-line/10 bg-paper">
-          <div className="flex h-14 items-center gap-2 px-3">
-            {isTabRoot ? (
-              <span className="w-11" />
-            ) : (
-              <button
-                type="button"
-                className="flex h-11 w-11 items-center justify-center rounded-full text-2xl text-brand"
-                onClick={() => router.back()}
-                aria-label="Go back"
-              >
-                ‹
-              </button>
-            )}
-            <h1 className="flex-1 truncate text-center text-base font-semibold">
-              {titleFor(pathname)}
-            </h1>
-            {showAccountMenu ? <UserMenu /> : <span className="w-11" />}
-          </div>
-        </header>
-      ) : null}
-      <main
-        id="main"
-        className={
-          isHome || isAuthRoute
-            ? "flex flex-1 items-center justify-center"
-            : "flex-1 overflow-y-auto px-4 py-5"
-        }
-      >
-        {children}
-      </main>
-      {showChrome ? (
-        <nav
-          className="shrink-0 border-t border-line/10 bg-paper"
-          aria-label="Main"
-        >
-          <ul className="grid grid-cols-5">
-            {TABS.map((tab) => {
-              const active = tabActive(pathname, tab.href);
-              return (
-                <li key={tab.href}>
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row lg:min-h-0 lg:overflow-hidden">
+          <aside
+            className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:w-52 lg:flex-col lg:border-r xl:w-60"
+            aria-label="Main"
+          >
+            <nav className="flex flex-col gap-1 p-3 pt-4">
+              {TABS.map((tab) => {
+                const active = tabActive(pathname, tab.href);
+                return (
                   <Link
+                    key={tab.href}
                     href={tab.href}
-                    className={`flex min-h-target flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
-                      active ? "text-brand" : "text-muted"
+                    className={`flex min-h-target items-center gap-3 rounded-2xl px-3 text-sm font-medium ${
+                      active
+                        ? "bg-brand/10 text-brand"
+                        : "text-muted hover:bg-field"
                     }`}
                     aria-current={active ? "page" : undefined}
                   >
                     <TabIcon name={tab.label} />
                     {tab.label}
                   </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      ) : null}
+                );
+              })}
+            </nav>
+          </aside>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <header className="shrink-0 border-b border-line/10 bg-paper">
+              <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-3 sm:px-4 lg:max-w-none lg:px-6">
+                {isTabRoot ? (
+                  <span className="w-11" aria-hidden />
+                ) : (
+                  <button
+                    type="button"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl text-brand"
+                    onClick={() => router.back()}
+                    aria-label="Go back"
+                  >
+                    ‹
+                  </button>
+                )}
+                <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold sm:text-lg">
+                  {titleFor(pathname)}
+                </h1>
+                {showAccountMenu ? <UserMenu /> : <span className="w-11" aria-hidden />}
+              </div>
+            </header>
+            <main
+              id="main"
+              className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-10"
+            >
+              <div className="mx-auto min-w-0 max-w-3xl lg:max-w-none">
+                {children}
+              </div>
+            </main>
+            <nav
+              className="shrink-0 border-t border-line/10 bg-paper lg:hidden"
+              aria-label="Main"
+            >
+              <ul className="grid grid-cols-5">
+                {TABS.map((tab) => {
+                  const active = tabActive(pathname, tab.href);
+                  return (
+                    <li key={tab.href}>
+                      <Link
+                        href={tab.href}
+                        className={`flex min-h-target flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
+                          active ? "text-brand" : "text-muted"
+                        }`}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        <TabIcon name={tab.label} />
+                        {tab.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      ) : (
+        <main
+          id="main"
+          className="flex min-h-screen flex-1 items-center justify-center px-4 py-8 sm:px-6"
+        >
+          {children}
+        </main>
+      )}
     </div>
   );
 }
 
 function TabIcon({ name }: { name: string }) {
-  const common = "h-5 w-5";
+  const common = "h-5 w-5 shrink-0";
   if (name === "Home") {
     return (
       <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.8" />
+        <path
+          d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        />
       </svg>
     );
   }
   if (name === "Pathways") {
     return (
       <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M7 4v16M17 4v16M7 8h10M7 16h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path
+          d="M7 4v16M17 4v16M7 8h10M7 16h10"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
       </svg>
     );
   }
@@ -159,15 +202,33 @@ function TabIcon({ name }: { name: string }) {
   if (name === "Bookings") {
     return (
       <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <rect
+          x="4"
+          y="5"
+          width="16"
+          height="15"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        />
+        <path
+          d="M8 3v4M16 3v4M4 10h16"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
       </svg>
     );
   }
   return (
     <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M5.5 19c1.4-3 3.6-4.5 6.5-4.5s5.1 1.5 6.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M5.5 19c1.4-3 3.6-4.5 6.5-4.5s5.1 1.5 6.5 4.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
