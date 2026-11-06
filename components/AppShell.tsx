@@ -15,6 +15,7 @@ const TABS = [
 ] as const;
 
 function titleFor(pathname: string) {
+  if (pathname === "/") return "Home";
   if (pathname.startsWith("/services/")) return "Opportunity";
   if (pathname.startsWith("/pathway")) return "Your pathway";
   if (pathname.startsWith("/messages/")) return "Message";
@@ -54,8 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, isGuest } = useAuth();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
-  const isHome = pathname === "/";
-  const showChrome = !isAuthRoute && !isHome;
+  const showChrome = !isAuthRoute;
   const isTabRoot = TABS.some((tab) => tab.href === pathname);
   const showAccountMenu = Boolean(user) || isGuest;
 
