@@ -8,15 +8,32 @@ import { loadSession } from "@/lib/store";
 export function HomeActions() {
   const { ready, user, isGuest } = useAuth();
   const [hasPathway, setHasPathway] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
     const session = loadSession();
     setHasPathway(session.pathway.length > 0);
+    setSessionReady(true);
   }, []);
 
   const signedIn = Boolean(user) || isGuest;
 
-  if (ready && !signedIn) {
+  if (!ready || !sessionReady) {
+    return <div className="mt-8 min-h-target" aria-hidden />;
+  }
+
+  if (!signedIn && !hasPathway) {
+    return (
+      <Link
+        href="/login"
+        className="mt-8 flex min-h-target w-full items-center justify-center rounded-full bg-brand px-6 font-medium text-paper"
+      >
+        Get started
+      </Link>
+    );
+  }
+
+  if (!signedIn && hasPathway) {
     return (
       <>
         <Link
