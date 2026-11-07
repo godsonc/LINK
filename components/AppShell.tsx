@@ -49,6 +49,27 @@ function tabActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/** Wider reading column on large screens (sidebar layout). */
+function mainColumnMaxClass(pathname: string): string {
+  const wide =
+    pathname === "/" ||
+    pathname.startsWith("/pathway") ||
+    pathname.startsWith("/messages") ||
+    pathname.startsWith("/bookings") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/discover") ||
+    pathname.startsWith("/services/") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/saved") ||
+    pathname.startsWith("/follow-up");
+
+  if (wide) {
+    return "mx-auto w-full min-w-0 max-w-4xl lg:max-w-5xl";
+  }
+  return "mx-auto w-full min-w-0 max-w-3xl lg:max-w-4xl";
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -125,9 +146,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               id="main"
               className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-10"
             >
-              <div className="mx-auto min-w-0 max-w-3xl lg:max-w-none">
-                {children}
-              </div>
+              <div className={mainColumnMaxClass(pathname)}>{children}</div>
             </main>
             <nav
               className="shrink-0 border-t border-line/10 bg-paper lg:hidden"
