@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div
       className={`flex flex-col bg-canvas text-ink ${
         showChrome
-          ? "mx-auto h-dvh min-h-0 w-full max-w-md lg:max-w-6xl"
+          ? "mx-auto h-dvh min-h-0 w-full max-w-md lg:mx-0 lg:max-w-none"
           : "min-h-screen min-w-0"
       }`}
     >
@@ -95,9 +95,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       {showChrome ? (
-        <div className="flex min-h-0 flex-1 flex-col lg:flex-row lg:min-h-0 lg:overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col lg:min-h-0 lg:flex-row lg:overflow-hidden">
           <aside
-            className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:w-52 lg:flex-col lg:border-r xl:w-60"
+            className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:h-dvh lg:w-52 lg:flex-col lg:border-r xl:w-60"
             aria-label="Main"
           >
             <nav className="flex flex-col gap-1 p-3 pt-4">

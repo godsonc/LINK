@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { loadProfile } from "@/lib/profile";
+import { useMemo, useState } from "react";
 import { PasswordHints } from "@/components/auth/PasswordHints";
 import {
   AuthCard,
@@ -31,12 +30,6 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const checks = useMemo(() => checkPassword(password), [password]);
-
-  useEffect(() => {
-    const profile = loadProfile();
-    if (profile.details.fullName) setFullName(profile.details.fullName);
-    if (profile.details.email) setEmail(profile.details.email);
-  }, []);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
