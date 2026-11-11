@@ -100,7 +100,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:h-dvh lg:w-52 lg:flex-col lg:border-r xl:w-60"
             aria-label="Main"
           >
-            <nav className="flex flex-col gap-1 p-3 pt-4">
+            <nav className="flex flex-1 flex-col gap-1 p-3 pt-4">
               {TABS.map((tab) => {
                 const active = tabActive(pathname, tab.href);
                 return (
@@ -120,6 +120,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 );
               })}
             </nav>
+            <SidebarSignOut />
           </aside>
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <header className="shrink-0 border-b border-line/10 bg-paper">
@@ -183,6 +184,61 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       )}
     </div>
+  );
+}
+
+function SidebarSignOut() {
+  const router = useRouter();
+  const { user, isGuest, clearGuest, signOut } = useAuth();
+  const guestOnly = isGuest && !user;
+  const showSignOut = Boolean(user) || isGuest;
+
+  if (!showSignOut) return null;
+
+  async function handleSignOut() {
+    if (guestOnly) {
+      clearGuest();
+      router.push("/login");
+      router.refresh();
+      return;
+    }
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
+  return (
+    <div className="border-t border-line/10 p-3">
+      <button
+        type="button"
+        className="flex min-h-target w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-medium text-danger hover:bg-field"
+        onClick={() => {
+          void handleSignOut();
+        }}
+      >
+        <SignOutIcon />
+        {guestOnly ? "Leave guest mode" : "Sign out"}
+      </button>
+    </div>
+  );
+}
+
+function SignOutIcon() {
+  return (
+    <svg
+      className="h-5 w-5 shrink-0"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
