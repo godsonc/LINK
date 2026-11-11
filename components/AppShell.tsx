@@ -74,6 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isGuest } = useAuth();
+  const signedIn = Boolean(user);
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
   const showChrome = !isAuthRoute;
@@ -84,7 +85,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div
       className={`flex flex-col bg-canvas text-ink ${
         showChrome
-          ? "mx-auto h-dvh min-h-0 w-full max-w-md lg:mx-0 lg:max-w-none"
+          ? signedIn
+            ? "mx-auto h-dvh min-h-0 w-full max-w-md lg:mx-0 lg:max-w-none"
+            : "mx-auto h-dvh min-h-0 w-full max-w-md"
           : "min-h-screen min-w-0"
       }`}
     >
@@ -95,32 +98,39 @@ export function AppShell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       {showChrome ? (
-        <div className="flex min-h-0 flex-1 flex-col lg:min-h-0 lg:flex-row lg:overflow-hidden">
-          <aside
-            className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:h-dvh lg:w-52 lg:flex-col lg:border-r xl:w-60"
-            aria-label="Main"
-          >
-            <nav className="flex flex-col gap-1 p-3 pt-4">
-              {TABS.map((tab) => {
-                const active = tabActive(pathname, tab.href);
-                return (
-                  <Link
-                    key={tab.href}
-                    href={tab.href}
-                    className={`flex min-h-target items-center gap-3 rounded-2xl px-3 text-sm font-medium ${
-                      active
-                        ? "bg-brand/10 text-brand"
-                        : "text-muted hover:bg-field"
-                    }`}
-                    aria-current={active ? "page" : undefined}
-                  >
-                    <TabIcon name={tab.label} />
-                    {tab.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
+        <div
+          className={`flex min-h-0 flex-1 flex-col ${
+            signedIn ? "lg:min-h-0 lg:flex-row lg:overflow-hidden" : ""
+          }`}
+        >
+          {signedIn ? (
+            <aside
+              className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:h-dvh lg:w-52 lg:flex-col lg:border-r xl:w-60"
+              aria-label="Main"
+            >
+              <nav className="flex flex-1 flex-col gap-1 p-3 pt-4">
+                {TABS.map((tab) => {
+                  const active = tabActive(pathname, tab.href);
+                  return (
+                    <Link
+                      key={tab.href}
+                      href={tab.href}
+                      className={`flex min-h-target items-center gap-3 rounded-2xl px-3 text-sm font-medium ${
+                        active
+                          ? "bg-brand/10 text-brand"
+                          : "text-muted hover:bg-field"
+                      }`}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <TabIcon name={tab.label} />
+                      {tab.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+              <SidebarSignOut />
+            </aside>
+          ) : null}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <header className="shrink-0 border-b border-line/10 bg-paper">
               <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-3 sm:px-4 lg:max-w-none lg:px-6">
@@ -149,7 +159,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className={mainColumnMaxClass(pathname)}>{children}</div>
             </main>
             <nav
-              className="shrink-0 border-t border-line/10 bg-paper lg:hidden"
+              className={`shrink-0 border-t border-line/10 bg-paper ${
+                signedIn ? "lg:hidden" : ""
+              }`}
               aria-label="Main"
             >
               <ul className="grid grid-cols-5">
@@ -183,6 +195,53 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       )}
     </div>
+  );
+}
+
+function SidebarSignOut() {
+  const router = useRouter();
+  const { user, signOut } = useAuth();
+
+  if (!user) return null;
+
+  async function handleSignOut() {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
+  return (
+    <div className="border-t border-line/10 p-3">
+      <button
+        type="button"
+        className="flex min-h-target w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-medium text-danger hover:bg-field"
+        onClick={() => {
+          void handleSignOut();
+        }}
+      >
+        <SignOutIcon />
+        Sign out
+      </button>
+    </div>
+  );
+}
+
+function SignOutIcon() {
+  return (
+    <svg
+      className="h-5 w-5 shrink-0"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
