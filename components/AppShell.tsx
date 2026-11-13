@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 
 const TABS = [
   { href: "/", label: "Home" },
-  { href: "/pathway", label: "Pathways" },
+  { href: "/pathway", label: "Pathway" },
   { href: "/messages", label: "Messages" },
   { href: "/bookings", label: "Bookings" },
   { href: "/profile", label: "Profile" },
@@ -78,8 +78,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/auth");
   const showChrome = !isAuthRoute;
+  const isHome = pathname === "/";
   const isTabRoot = TABS.some((tab) => tab.href === pathname);
   const showAccountMenu = Boolean(user) || isGuest;
+  const showTopBar = showChrome && !isHome;
 
   return (
     <div
@@ -99,16 +101,18 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
       {showChrome ? (
         <div
-          className={`flex min-h-0 flex-1 flex-col ${
-            signedIn ? "lg:min-h-0 lg:flex-row lg:overflow-hidden" : ""
-          }`}
+          className={
+            signedIn
+              ? "flex min-h-0 flex-1 flex-row overflow-hidden"
+              : "flex min-h-0 flex-1 flex-col"
+          }
         >
           {signedIn ? (
             <aside
-              className="hidden shrink-0 border-line/10 bg-paper lg:flex lg:h-dvh lg:w-52 lg:flex-col lg:border-r xl:w-60"
+              className="flex min-h-0 w-44 shrink-0 flex-col border-r border-line/10 bg-paper sm:w-52 xl:w-60"
               aria-label="Main"
             >
-              <nav className="flex flex-1 flex-col gap-1 p-3 pt-4">
+              <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3 pt-4">
                 {TABS.map((tab) => {
                   const active = tabActive(pathname, tab.href);
                   return (
@@ -131,59 +135,49 @@ export function AppShell({ children }: { children: ReactNode }) {
               <SidebarSignOut />
             </aside>
           ) : null}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <header className="shrink-0 border-b border-line/10 bg-paper">
-              <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-3 sm:px-4 lg:max-w-none lg:px-6">
-                {isTabRoot ? (
-                  <span className="w-11" aria-hidden />
-                ) : (
-                  <button
-                    type="button"
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl text-brand"
-                    onClick={() => router.back()}
-                    aria-label="Go back"
-                  >
-                    ‹
-                  </button>
-                )}
-                <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold sm:text-lg">
-                  {titleFor(pathname)}
-                </h1>
-                {showAccountMenu ? <UserMenu /> : <span className="w-11" aria-hidden />}
-              </div>
-            </header>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            {showTopBar ? (
+              <header className="shrink-0 border-b border-line/10 bg-paper">
+                <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-3 sm:px-4 lg:max-w-none lg:px-6">
+                  {isTabRoot ? (
+                    <span className="w-11" aria-hidden />
+                  ) : (
+                    <button
+                      type="button"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl text-brand"
+                      onClick={() => router.back()}
+                      aria-label="Go back"
+                    >
+                      ‹
+                    </button>
+                  )}
+                  <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold sm:text-lg">
+                    {titleFor(pathname)}
+                  </h1>
+                  {showAccountMenu ? (
+                    <UserMenu />
+                  ) : (
+                    <span className="w-11" aria-hidden />
+                  )}
+                </div>
+              </header>
+            ) : null}
             <main
               id="main"
-              className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-10"
+              className={
+                isHome
+                  ? "flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-8 sm:px-6"
+                  : "min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-10"
+              }
             >
-              <div className={mainColumnMaxClass(pathname)}>{children}</div>
+              <div
+                className={
+                  isHome ? "w-full" : mainColumnMaxClass(pathname)
+                }
+              >
+                {children}
+              </div>
             </main>
-            <nav
-              className={`shrink-0 border-t border-line/10 bg-paper ${
-                signedIn ? "lg:hidden" : ""
-              }`}
-              aria-label="Main"
-            >
-              <ul className="grid grid-cols-5">
-                {TABS.map((tab) => {
-                  const active = tabActive(pathname, tab.href);
-                  return (
-                    <li key={tab.href}>
-                      <Link
-                        href={tab.href}
-                        className={`flex min-h-target flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
-                          active ? "text-brand" : "text-muted"
-                        }`}
-                        aria-current={active ? "page" : undefined}
-                      >
-                        <TabIcon name={tab.label} />
-                        {tab.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
           </div>
         </div>
       ) : (
@@ -258,7 +252,7 @@ function TabIcon({ name }: { name: string }) {
       </svg>
     );
   }
-  if (name === "Pathways") {
+  if (name === "Pathway") {
     return (
       <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
